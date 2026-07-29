@@ -1,0 +1,53 @@
+{
+  "app": {
+    "name": "Panel Calixte",
+    "tagline": "Opérations BFF"
+  },
+  "nav": {
+    "users": "Utilisateurs",
+    "mifos": "Mifos (Core)"
+  },
+  "topbar": {
+    "language": "Langue",
+    "themeLight": "Clair",
+    "themeDark": "Sombre",
+    "logout": "Déconnexion"
+  },
+  "login": {
+    "title": "Accès staff",
+    "subtitle": "Identité du panneau — pas l'app mobile",
+    "email": "E-mail",
+    "password": "Mot de passe",
+    "submit": "Connexion",
+    "submitting": "Connexion…",
+    "error": "Identifiants invalides"
+  },
+  "users": {
+    "title": "Utilisateurs app",
+    "search": "Rechercher téléphone, nom ou ID",
+    "status": "Statut",
+    "allStatuses": "Tous",
+    "empty": "Aucun utilisateur",
+    "forbidden": "Pas d'autorisation pour voir les utilisateurs",
+    "loadError": "Impossible de charger la liste",
+    "columns": {
+      "phone": "Téléphone",
+      "name": "Nom",
+      "status": "Statut",
+      "updated": "Mis à jour"
+    },
+    "detail": "Détail",
+    "reason": "Motif",
+    "reasonRequired": "Indiquez un motif",
+    "changeStatus": "Changer le statut",
+    "saveStatus": "Enregistrer",
+    "statusUpdated": "Statut mis à jour",
+    "back": "Retour",
+    "noPermissionAction": "Pas d'autorisation pour changer le statut"
+  },
+  "common": {
+    "loading": "Chargement…",
+    "retry": "Réessayer",
+    "cancel": "Annuler"
+  }
+}

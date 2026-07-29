@@ -1,36 +1,57 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Panel Admin Calixte
 
-## Getting Started
+Backoffice ops de Banco Calixte (capa BFF). **No** sustituye Mifos.
 
-First, run the development server:
+| Campo | Valor |
+|-------|-------|
+| Dominio | `panel.bcalixte.cc.cd` (DNS a pedir al dueño) |
+| Repo | https://github.com/Jean007K/panel_admin_calixte |
+| API | `NEXT_PUBLIC_API_BASE_URL` → `https://api.bcalixte.cc.cd` |
+| Stack | Next.js 15 · TypeScript · next-intl (es/fr) · tema claro/oscuro |
+| Diseño | `PRODUCT.md` · `DESIGN.md` · Impeccable |
 
-```bash
+## Arranque local
+
+```powershell
+cd Bakend_panelAdmin
+copy .env.example .env.local
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abrir http://localhost:3000 → redirige a `/es/users` (login si no hay sesión).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Auth staff (BFF)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Requiere Postgres BFF + migración `000005_staff_rbac.sql` y variables:
 
-## Learn More
+```env
+ADMIN_BOOTSTRAP_EMAIL=admin@bcalixte.cc.cd
+ADMIN_BOOTSTRAP_PASSWORD=ChangeMeAdmin!123
+CORS_ORIGINS=http://localhost:3000,https://panel.bcalixte.cc.cd
+```
 
-To learn more about Next.js, take a look at the following resources:
+Endpoints: `POST /api/v1/admin/auth/login`, `GET /api/v1/admin/users`, `PATCH /api/v1/admin/users/:id/status`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Roles semilla: `super_admin`, `ops`, `support_l1`, `executive`, `manager`, `area_head`.  
+`super_admin` bypasea todos los permisos.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Relación con el monorepo
 
-## Deploy on Vercel
+```
+Panel → bakend_calixte /api/v1/admin → Postgres BFF (app_users, staff_*)
+Mifos → Fineract (ledger) — enlace externo en el shell
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Deploy Dokploy
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Conectar repo `panel_admin_calixte`.
+2. Dockerfile en raíz; build-arg `NEXT_PUBLIC_API_BASE_URL=https://api.bcalixte.cc.cd`.
+3. Dominio `panel.bcalixte.cc.cd` → contenedor puerto 3000.
+4. Añadir origen CORS en BFF.
+
+## Docs
+
+- [`docs/DEC-PANEL-001.md`](docs/DEC-PANEL-001.md)
+- [`docs/SHAPE_BRIEF.md`](docs/SHAPE_BRIEF.md)
+- BFF: DEC-BFF-017 en `bakend_calixte/docs/DECISIONS.md`

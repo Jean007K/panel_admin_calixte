@@ -9,8 +9,14 @@ export default {
   theme: {
     extend: {
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+        bg: "var(--bg)",
+        surface: "var(--surface)",
+        accent: "var(--accent)",
+      },
+      fontFamily: {
+        sans: ["var(--font-sans)", "Source Sans 3", "sans-serif"],
+        display: ["var(--font-display)", "Source Serif 4", "serif"],
+        mono: ["var(--font-mono)", "IBM Plex Mono", "monospace"],
       },
     },
   },

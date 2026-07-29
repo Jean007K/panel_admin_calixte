@@ -1,0 +1,53 @@
+{
+  "app": {
+    "name": "Panel Calixte",
+    "tagline": "Operaciones BFF"
+  },
+  "nav": {
+    "users": "Usuarios",
+    "mifos": "Mifos (Core)"
+  },
+  "topbar": {
+    "language": "Idioma",
+    "themeLight": "Claro",
+    "themeDark": "Oscuro",
+    "logout": "Cerrar sesión"
+  },
+  "login": {
+    "title": "Acceso staff",
+    "subtitle": "Identidad del panel — no es la app móvil",
+    "email": "Correo",
+    "password": "Contraseña",
+    "submit": "Entrar",
+    "submitting": "Entrando…",
+    "error": "Credenciales inválidas"
+  },
+  "users": {
+    "title": "Usuarios app",
+    "search": "Buscar teléfono, nombre o ID",
+    "status": "Estado",
+    "allStatuses": "Todos",
+    "empty": "No hay usuarios",
+    "forbidden": "Sin permiso para ver usuarios",
+    "loadError": "No se pudo cargar la lista",
+    "columns": {
+      "phone": "Teléfono",
+      "name": "Nombre",
+      "status": "Estado",
+      "updated": "Actualizado"
+    },
+    "detail": "Detalle",
+    "reason": "Motivo",
+    "reasonRequired": "Indica un motivo",
+    "changeStatus": "Cambiar estado",
+    "saveStatus": "Guardar",
+    "statusUpdated": "Estado actualizado",
+    "back": "Volver",
+    "noPermissionAction": "Sin permiso para cambiar estado"
+  },
+  "common": {
+    "loading": "Cargando…",
+    "retry": "Reintentar",
+    "cancel": "Cancelar"
+  }
+}
