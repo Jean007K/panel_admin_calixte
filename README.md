@@ -31,10 +31,11 @@ ADMIN_BOOTSTRAP_PASSWORD=ChangeMeAdmin!123
 CORS_ORIGINS=http://localhost:3000,https://panel.bcalixte.cc.cd
 ```
 
-Endpoints: `POST /api/v1/admin/auth/login`, `GET /api/v1/admin/users`, `PATCH /api/v1/admin/users/:id/status`.
+Endpoints: login/refresh, users (+ `GET .../users/:id/dossier`), content (promos/blocks), flags, links, devices, sessions, audit, ops.
 
-Roles semilla: `super_admin`, `ops`, `support_l1`, `executive`, `manager`, `area_head`.  
-`super_admin` bypasea todos los permisos.
+Navegación: **Usuarios** · **Configuración de la app** (anuncios, préstamos tip/simulador, seguros catálogo, productos multi-cuenta, actualización remota, flags) · **Más** (vínculos, dispositivos, sesiones, auditoría, ops).
+
+Migraciones BFF: `000005_staff_rbac.sql`, `000006_app_content_remote.sql`, `000007_products_cards_loans_insurance.sql`.
 
 ## Relación con el monorepo
 

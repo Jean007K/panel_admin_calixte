@@ -24,6 +24,89 @@ export type AppUser = {
   closedAt?: string;
   createdAt: string;
   updatedAt: string;
+  hasClientLink?: boolean;
+  hasSavingsLink?: boolean;
+  onboarding?: "linked" | "partial" | "missing" | string;
+};
+
+export type UserDossier = {
+  user: AppUser;
+  onboarding: string;
+  clientExternalId?: string;
+  links: Record<string, unknown>[];
+  devices: Record<string, unknown>[];
+  sessionsActive: Record<string, unknown>[];
+  sessionsHistory: Record<string, unknown>[];
+  audit: Record<string, unknown>[];
+  transfers: Record<string, unknown>[];
+};
+
+export type PromoAdmin = {
+  id: string;
+  tag: string;
+  title: string;
+  excerpt: string;
+  cta: string;
+  ctaLabel: string;
+  featured: boolean;
+  sortOrder: number;
+  enabled: boolean;
+  startsAt?: string | null;
+  endsAt?: string | null;
+  locale: string;
+  updatedAt: string;
+};
+
+export type ProductDefAdmin = {
+  id: string;
+  code: string;
+  name: string;
+  kind: string;
+  currency: string;
+  fineractProductId?: number | null;
+  iconKey: string;
+  sortOrder: number;
+};
+
+export type LoanTipConfig = {
+  id?: string;
+  title: string;
+  heroRateLabel: string;
+  heroRateCaption: string;
+  maxAmountLabel: string;
+  maxTermLabel: string;
+  sectionTitle: string;
+  interestMeta: string;
+  disclaimer: string;
+  rateBps: number;
+  minMonths: number;
+  maxMonths: number;
+  maxAmountMinor: number;
+  minAmountMinor: number;
+  tipRatesDisplay?: Record<string, unknown>[];
+};
+
+export type LoanSimulationAdmin = {
+  id: string;
+  userId: string;
+  phone: string;
+  amountMinor: number;
+  months: number;
+  rateBps: number;
+  paymentMinor: number;
+  createdAt: string;
+};
+
+export type InsuranceProductAdmin = {
+  id: string;
+  code: string;
+  title: string;
+  subtitle: string;
+  priceLabel: string;
+  interestLabel: string;
+  iconKey: string;
+  active: boolean;
+  sortOrder: number;
 };
 
 const ACCESS_KEY = "calixte_admin_access";
@@ -157,6 +240,31 @@ export async function apiGetUser(id: string) {
   return res.json() as Promise<AppUser>;
 }
 
+export async function apiGetUserDossier(id: string) {
+  const res = await authFetch(`/api/v1/admin/users/${encodeURIComponent(id)}/dossier`);
+  if (res.status === 403) throw Object.assign(new Error("forbidden"), { code: 403 });
+  if (res.status === 404) {
+    // BFF antiguo sin ruta dossier, o usuario inexistente: intentar detalle simple.
+    try {
+      const user = await apiGetUser(id);
+      return {
+        user,
+        onboarding: user.onboarding || "missing",
+        links: [],
+        devices: [],
+        sessionsActive: [],
+        sessionsHistory: [],
+        audit: [],
+        transfers: [],
+      } satisfies UserDossier;
+    } catch (e) {
+      throw e;
+    }
+  }
+  if (!res.ok) throw new Error(await parseError(res));
+  return res.json() as Promise<UserDossier>;
+}
+
 export async function apiUpdateUserStatus(id: string, status: string, reason: string) {
   const res = await authFetch(`/api/v1/admin/users/${id}/status`, {
     method: "PATCH",
@@ -166,3 +274,177 @@ export async function apiUpdateUserStatus(id: string, status: string, reason: st
   if (!res.ok) throw new Error(await parseError(res));
   return res.json();
 }
+
+async function listResource<T>(path: string, q = "", status = "", extra?: Record<string, string>) {
+  const params = new URLSearchParams();
+  if (q) params.set("q", q);
+  if (status) params.set("status", status);
+  if (extra) Object.entries(extra).forEach(([k, v]) => v && params.set(k, v));
+  params.set("limit", "50");
+  const res = await authFetch(`${path}?${params}`);
+  if (res.status === 403) throw Object.assign(new Error("forbidden"), { code: 403 });
+  if (!res.ok) throw new Error(await parseError(res));
+  return res.json() as Promise<{ items: T[]; total?: number }>;
+}
+
+export const apiListLinks = (q: string, status: string) =>
+  listResource<Record<string, unknown>>("/api/v1/admin/links", q, status);
+
+export const apiListDevices = (q: string, status: string) =>
+  listResource<Record<string, unknown>>("/api/v1/admin/devices", q, status);
+
+export async function apiRevokeDevice(id: string, reason: string) {
+  const res = await authFetch(`/api/v1/admin/devices/${id}/revoke`, {
+    method: "POST",
+    body: JSON.stringify({ reason }),
+  });
+  if (res.status === 403) throw Object.assign(new Error("forbidden"), { code: 403 });
+  if (!res.ok) throw new Error(await parseError(res));
+  return res.json();
+}
+
+export const apiListSessions = (q: string, status: string) =>
+  listResource<Record<string, unknown>>("/api/v1/admin/sessions", q, status);
+
+export const apiListAudit = (q: string, action = "") =>
+  listResource<Record<string, unknown>>("/api/v1/admin/audit", q, "", action ? { action } : undefined);
+
+export async function apiListFlags() {
+  const res = await authFetch(`/api/v1/admin/feature-flags`);
+  if (res.status === 403) throw Object.assign(new Error("forbidden"), { code: 403 });
+  if (!res.ok) throw new Error(await parseError(res));
+  return res.json() as Promise<{ items: { key: string; enabled: boolean; value: unknown; updatedAt: string }[] }>;
+}
+
+export async function apiUpsertFlag(key: string, enabled: boolean, value: unknown = {}) {
+  const res = await authFetch(`/api/v1/admin/feature-flags/${encodeURIComponent(key)}`, {
+    method: "PUT",
+    body: JSON.stringify({ enabled, value }),
+  });
+  if (res.status === 403) throw Object.assign(new Error("forbidden"), { code: 403 });
+  if (!res.ok) throw new Error(await parseError(res));
+  return res.json();
+}
+
+export const apiListTransfers = (q: string, status: string) =>
+  listResource<Record<string, unknown>>("/api/v1/admin/transfers", q, status);
+
+export async function apiSystemProbe() {
+  const [live, ready] = await Promise.all([
+    fetch(`${API_BASE}/healthz`).then((r) => r.json()).catch((e) => ({ error: String(e) })),
+    fetch(`${API_BASE}/readyz`).then(async (r) => ({ statusCode: r.status, ...(await r.json()) })).catch((e) => ({ error: String(e) })),
+  ]);
+  return { live, ready };
+}
+
+export async function apiListPromosAdmin() {
+  const res = await authFetch(`/api/v1/admin/content/promos`);
+  if (res.status === 403) throw Object.assign(new Error("forbidden"), { code: 403 });
+  if (!res.ok) throw new Error(await parseError(res));
+  return res.json() as Promise<{ items: PromoAdmin[] }>;
+}
+
+export async function apiCreatePromo(body: Partial<PromoAdmin>) {
+  const res = await authFetch(`/api/v1/admin/content/promos`, {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
+  if (res.status === 403) throw Object.assign(new Error("forbidden"), { code: 403 });
+  if (!res.ok) throw new Error(await parseError(res));
+  return res.json() as Promise<PromoAdmin>;
+}
+
+export async function apiUpdatePromo(id: string, body: Partial<PromoAdmin>) {
+  const res = await authFetch(`/api/v1/admin/content/promos/${encodeURIComponent(id)}`, {
+    method: "PATCH",
+    body: JSON.stringify(body),
+  });
+  if (res.status === 403) throw Object.assign(new Error("forbidden"), { code: 403 });
+  if (!res.ok) throw new Error(await parseError(res));
+  return res.json() as Promise<PromoAdmin>;
+}
+
+export async function apiDeletePromo(id: string) {
+  const res = await authFetch(`/api/v1/admin/content/promos/${encodeURIComponent(id)}`, {
+    method: "DELETE",
+  });
+  if (res.status === 403) throw Object.assign(new Error("forbidden"), { code: 403 });
+  if (!res.ok) throw new Error(await parseError(res));
+  return res.json();
+}
+
+export async function apiGetContentBlock(key: string) {
+  const res = await authFetch(`/api/v1/admin/content/blocks/${encodeURIComponent(key)}`);
+  if (res.status === 403) throw Object.assign(new Error("forbidden"), { code: 403 });
+  if (res.status === 404) throw Object.assign(new Error("not_found"), { code: 404 });
+  if (!res.ok) throw new Error(await parseError(res));
+  return res.json() as Promise<{ key: string; value: unknown; updatedAt: string }>;
+}
+
+export async function apiPutContentBlock(key: string, value: unknown) {
+  const res = await authFetch(`/api/v1/admin/content/blocks/${encodeURIComponent(key)}`, {
+    method: "PUT",
+    body: JSON.stringify({ value }),
+  });
+  if (res.status === 403) throw Object.assign(new Error("forbidden"), { code: 403 });
+  if (!res.ok) throw new Error(await parseError(res));
+  return res.json() as Promise<{ key: string; value: unknown; updatedAt: string }>;
+}
+
+export async function apiListProductsAdmin() {
+  const res = await authFetch(`/api/v1/admin/products`);
+  if (res.status === 403) throw Object.assign(new Error("forbidden"), { code: 403 });
+  if (!res.ok) throw new Error(await parseError(res));
+  return res.json() as Promise<{ items: ProductDefAdmin[] }>;
+}
+
+export async function apiGetLoanTip() {
+  const res = await authFetch(`/api/v1/admin/loans/tip-config`);
+  if (res.status === 403) throw Object.assign(new Error("forbidden"), { code: 403 });
+  if (!res.ok) throw new Error(await parseError(res));
+  return res.json() as Promise<LoanTipConfig>;
+}
+
+export async function apiPutLoanTip(body: LoanTipConfig) {
+  const res = await authFetch(`/api/v1/admin/loans/tip-config`, {
+    method: "PUT",
+    body: JSON.stringify(body),
+  });
+  if (res.status === 403) throw Object.assign(new Error("forbidden"), { code: 403 });
+  if (!res.ok) throw new Error(await parseError(res));
+  return res.json();
+}
+
+export async function apiListLoanSimulations() {
+  const res = await authFetch(`/api/v1/admin/loans/simulations`);
+  if (res.status === 403) throw Object.assign(new Error("forbidden"), { code: 403 });
+  if (!res.ok) throw new Error(await parseError(res));
+  return res.json() as Promise<{ items: LoanSimulationAdmin[] }>;
+}
+
+export async function apiListInsurance() {
+  const res = await authFetch(`/api/v1/admin/insurance`);
+  if (res.status === 403) throw Object.assign(new Error("forbidden"), { code: 403 });
+  if (!res.ok) throw new Error(await parseError(res));
+  return res.json() as Promise<{ items: InsuranceProductAdmin[] }>;
+}
+
+export async function apiUpsertInsurance(body: Partial<InsuranceProductAdmin>) {
+  const res = await authFetch(`/api/v1/admin/insurance`, {
+    method: body.id ? "PUT" : "POST",
+    body: JSON.stringify(body),
+  });
+  if (res.status === 403) throw Object.assign(new Error("forbidden"), { code: 403 });
+  if (!res.ok) throw new Error(await parseError(res));
+  return res.json();
+}
+
+export async function apiDeleteInsurance(id: string) {
+  const res = await authFetch(`/api/v1/admin/insurance/${encodeURIComponent(id)}`, {
+    method: "DELETE",
+  });
+  if (res.status === 403) throw Object.assign(new Error("forbidden"), { code: 403 });
+  if (!res.ok) throw new Error(await parseError(res));
+  return res.json();
+}
+

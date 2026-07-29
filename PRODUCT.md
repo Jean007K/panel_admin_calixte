@@ -63,3 +63,15 @@ Backoffice de la **capa aplicación Calixte** (BFF), no un segundo Mifos. Contab
 ## Accessibility & Inclusion
 
 WCAG 2.2 AA como objetivo: contraste ≥4.5:1, foco teclado visible, labels en formularios, soporte de preferencia de tema del sistema al primer load.
+
+## Productos, seguros y préstamos (BFF)
+
+Contenido remoto administrable desde el panel (DEC-BFF-019..022); la app móvil consume `/api/v1/content/*` y `/api/v1/admin/*` — el panel **no** toca Fineract.
+
+| Área | Panel (ops) | App cliente |
+|------|-------------|-------------|
+| **Productos / multi-cuenta** | Catálogo `product_definitions`; prefs default por usuario | `GET /me/accounts`, default en BFF |
+| **Seguros** | CRUD catálogo (`insurance_products`, icon_key local) | Lista catálogo; contratar = futuro |
+| **Préstamos (tip)** | Editar tip/simulador (`loan_tip_config`, historial simulaciones) | `GET /content/loans`, simulador sin underwriting Core |
+
+Transferencias P2P siguen usando la **cuenta default** del usuario hasta selector explícito en app.

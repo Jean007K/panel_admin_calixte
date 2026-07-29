@@ -90,25 +90,26 @@ export default function UsersPage() {
               <th className="px-4 py-3 font-medium">{t("columns.phone")}</th>
               <th className="px-4 py-3 font-medium">{t("columns.name")}</th>
               <th className="px-4 py-3 font-medium">{t("columns.status")}</th>
+              <th className="px-4 py-3 font-medium">{t("columns.onboarding")}</th>
               <th className="px-4 py-3 font-medium">{t("columns.updated")}</th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={4} className="px-4 py-8 text-[var(--text-muted)]">
+                <td colSpan={5} className="px-4 py-8 text-[var(--text-muted)]">
                   {tc("loading")}
                 </td>
               </tr>
             ) : error === "load" ? (
               <tr>
-                <td colSpan={4} className="px-4 py-8 text-[var(--danger)]">
+                <td colSpan={5} className="px-4 py-8 text-[var(--danger)]">
                   {t("loadError")}
                 </td>
               </tr>
             ) : items.length === 0 ? (
               <tr>
-                <td colSpan={4} className="px-4 py-8 text-[var(--text-muted)]">
+                <td colSpan={5} className="px-4 py-8 text-[var(--text-muted)]">
                   {t("empty")}
                 </td>
               </tr>
@@ -129,6 +130,23 @@ export default function UsersPage() {
                   <td className="px-4 py-3">{u.displayName || "—"}</td>
                   <td className="px-4 py-3">
                     <StatusChip status={u.status} />
+                  </td>
+                  <td className="px-4 py-3">
+                    <span
+                      className={`inline-flex rounded px-2 py-0.5 text-xs font-medium ${
+                        u.onboarding === "linked"
+                          ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300"
+                          : u.onboarding === "partial"
+                            ? "bg-amber-500/15 text-amber-800 dark:text-amber-200"
+                            : "bg-[var(--surface-2)] text-[var(--text-muted)]"
+                      }`}
+                    >
+                      {u.onboarding === "linked"
+                        ? t("onboardingLinked")
+                        : u.onboarding === "partial"
+                          ? t("onboardingPartial")
+                          : t("onboardingMissing")}
+                    </span>
                   </td>
                   <td className="px-4 py-3 text-[var(--text-muted)]">
                     {u.updatedAt ? new Date(u.updatedAt).toLocaleString(locale) : "—"}
