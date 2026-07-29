@@ -80,7 +80,9 @@
     "emptyDevices": "Sin dispositivos",
     "emptySessions": "Sin sesiones",
     "emptyAudit": "Sin eventos de auditoría",
-    "emptyTransfers": "Sin transfers recientes"
+    "emptyTransfers": "Sin transfers recientes",
+    "revokeDevice": "Revocar",
+    "deviceRevoked": "Dispositivo revocado — la app pedirá login completo"
   },
   "links": {
     "title": "Vínculos Core",

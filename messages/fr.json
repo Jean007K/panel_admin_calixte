@@ -80,7 +80,9 @@
     "emptyDevices": "Aucun appareil",
     "emptySessions": "Aucune session",
     "emptyAudit": "Aucun événement d'audit",
-    "emptyTransfers": "Aucun transfer récent"
+    "emptyTransfers": "Aucun transfer récent",
+    "revokeDevice": "Révoquer",
+    "deviceRevoked": "Appareil révoqué — l'app demandera un login complet"
   },
   "links": {
     "title": "Liens Core",

@@ -6,6 +6,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { useParams } from "next/navigation";
 import {
   apiGetUserDossier,
+  apiRevokeDevice,
   apiUpdateUserStatus,
   getStaff,
   hasPermission,
@@ -63,6 +64,7 @@ export default function UserDetailPage() {
   const [busy, setBusy] = useState(false);
   const canUpdate = hasPermission(getStaff(), "users:update_status");
   const canRead = hasPermission(getStaff(), "users:read");
+  const canRevokeDevice = hasPermission(getStaff(), "devices:revoke");
 
   const load = async () => {
     const d = await apiGetUserDossier(id);
@@ -287,19 +289,71 @@ export default function UserDetailPage() {
         ) : null}
 
         {tab === "devices" ? (
-          <DataTable
-            empty={t("emptyDevices")}
-            columns={[
-              { key: "platform", label: "Platform" },
-              { key: "deviceModel", label: "Model" },
-              { key: "appVersion", label: "App" },
-              { key: "status", label: t("columns.status") },
-              { key: "lastSeenAt", label: "Last seen", date: true },
-              { key: "installationId", label: "Installation" },
-            ]}
-            rows={dossier.devices}
-            locale={locale}
-          />
+          <div className="overflow-auto rounded border border-[var(--border)] bg-[var(--surface)]">
+            <table className="w-full min-w-[720px] text-left text-sm">
+              <thead className="border-b border-[var(--border)] bg-[var(--surface-2)] text-xs uppercase text-[var(--text-muted)]">
+                <tr>
+                  <th className="px-3 py-3">Platform</th>
+                  <th className="px-3 py-3">Model</th>
+                  <th className="px-3 py-3">App</th>
+                  <th className="px-3 py-3">{t("columns.status")}</th>
+                  <th className="px-3 py-3">Last seen</th>
+                  <th className="px-3 py-3">Installation</th>
+                  <th className="px-3 py-3" />
+                </tr>
+              </thead>
+              <tbody>
+                {dossier.devices.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} className="px-3 py-8 text-[var(--text-muted)]">
+                      {t("emptyDevices")}
+                    </td>
+                  </tr>
+                ) : (
+                  dossier.devices.map((r) => (
+                    <tr key={str(r.id)} className="border-t border-[var(--border)]">
+                      <td className="px-3 py-2">{str(r.platform)}</td>
+                      <td className="px-3 py-2">{str(r.deviceModel)}</td>
+                      <td className="px-3 py-2">{str(r.appVersion)}</td>
+                      <td className="px-3 py-2">
+                        <StatusChip status={str(r.status)} />
+                      </td>
+                      <td className="px-3 py-2 text-[var(--text-muted)]">
+                        {fmtDate(r.lastSeenAt, locale)}
+                      </td>
+                      <td className="px-3 py-2 font-mono-data text-xs">
+                        {str(r.installationId)}
+                      </td>
+                      <td className="px-3 py-2 text-right">
+                        {canRevokeDevice && r.status === "active" ? (
+                          <button
+                            type="button"
+                            className="text-xs text-[var(--danger)] hover:underline"
+                            disabled={busy}
+                            onClick={async () => {
+                              setBusy(true);
+                              setMsg("");
+                              try {
+                                await apiRevokeDevice(str(r.id), "admin user dossier");
+                                await load();
+                                setMsg(t("deviceRevoked"));
+                              } catch {
+                                setMsg(t("noPermissionAction"));
+                              } finally {
+                                setBusy(false);
+                              }
+                            }}
+                          >
+                            {t("revokeDevice")}
+                          </button>
+                        ) : null}
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
         ) : null}
 
         {tab === "sessions" ? (
