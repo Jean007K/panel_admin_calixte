@@ -45,6 +45,7 @@
     "empty": "No hay usuarios",
     "forbidden": "Sin permiso para ver usuarios",
     "loadError": "No se pudo cargar la lista",
+    "dossierLoadError": "No se pudo cargar la ficha del usuario",
     "notFound": "Usuario no encontrado",
     "columns": {
       "phone": "Teléfono",
@@ -234,7 +235,10 @@
     "cancel": "Cancelar",
     "allStatuses": "Todos",
     "status": "Estado",
-    "total": "registros"
+    "total": "registros",
+    "prev": "Anterior",
+    "next": "Siguiente",
+    "pageOf": "Página {page} de {pages}"
   }
 }
 

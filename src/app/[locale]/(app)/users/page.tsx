@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { apiListUsers, getStaff, hasPermission, type AppUser } from "@/lib/api";
+import { PAGE_SIZE, PaginationBar } from "@/components/pagination-bar";
 import { StatusChip } from "@/components/status-chip";
 
 const STATUSES = ["", "active", "pending", "locked", "suspended", "disabled", "closed"];
@@ -14,6 +15,7 @@ export default function UsersPage() {
   const locale = useLocale();
   const [q, setQ] = useState("");
   const [status, setStatus] = useState("");
+  const [offset, setOffset] = useState(0);
   const [items, setItems] = useState<AppUser[]>([]);
   const [total, setTotal] = useState(0);
   const [error, setError] = useState<"forbidden" | "load" | null>(null);
@@ -31,7 +33,7 @@ export default function UsersPage() {
       setLoading(true);
       setError(null);
       try {
-        const data = await apiListUsers(q, status);
+        const data = await apiListUsers(q, status, offset);
         if (!cancelled) {
           setItems(data.items || []);
           setTotal(data.total);
@@ -48,7 +50,7 @@ export default function UsersPage() {
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [q, status, canRead]);
+  }, [q, status, offset, canRead]);
 
   if (error === "forbidden") {
     return <p className="text-sm text-[var(--danger)]">{t("forbidden")}</p>;
@@ -64,13 +66,19 @@ export default function UsersPage() {
         <div className="flex flex-wrap gap-2">
           <input
             value={q}
-            onChange={(e) => setQ(e.target.value)}
+            onChange={(e) => {
+              setQ(e.target.value);
+              setOffset(0);
+            }}
             placeholder={t("search")}
             className="min-w-[220px] rounded border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm"
           />
           <select
             value={status}
-            onChange={(e) => setStatus(e.target.value)}
+            onChange={(e) => {
+              setStatus(e.target.value);
+              setOffset(0);
+            }}
             className="rounded border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm"
             aria-label={t("status")}
           >
@@ -157,6 +165,7 @@ export default function UsersPage() {
           </tbody>
         </table>
       </div>
+      <PaginationBar total={total} limit={PAGE_SIZE} offset={offset} onPage={setOffset} />
     </div>
   );
 }

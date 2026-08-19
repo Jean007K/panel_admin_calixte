@@ -3,11 +3,13 @@
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { apiListAudit, getStaff, hasPermission } from "@/lib/api";
+import { PAGE_SIZE, PaginationBar } from "@/components/pagination-bar";
 
 export default function AuditPage() {
   const t = useTranslations("audit");
   const tc = useTranslations("common");
   const [q, setQ] = useState("");
+  const [offset, setOffset] = useState(0);
   const [items, setItems] = useState<Record<string, unknown>[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -19,7 +21,7 @@ export default function AuditPage() {
     const timer = setTimeout(async () => {
       setLoading(true);
       try {
-        const data = await apiListAudit(q);
+        const data = await apiListAudit(q, "", offset);
         if (!cancelled) {
           setItems(data.items || []);
           setTotal(data.total || 0);
@@ -32,7 +34,7 @@ export default function AuditPage() {
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [q, can]);
+  }, [q, offset, can]);
 
   if (!can) return <p className="text-sm text-[var(--danger)]">{t("forbidden")}</p>;
 
@@ -47,7 +49,10 @@ export default function AuditPage() {
         </div>
         <input
           value={q}
-          onChange={(e) => setQ(e.target.value)}
+          onChange={(e) => {
+            setQ(e.target.value);
+            setOffset(0);
+          }}
           placeholder={t("search")}
           className="min-w-[260px] rounded border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm"
         />
@@ -94,6 +99,7 @@ export default function AuditPage() {
           </tbody>
         </table>
       </div>
+      <PaginationBar total={total} limit={PAGE_SIZE} offset={offset} onPage={setOffset} />
     </div>
   );
 }

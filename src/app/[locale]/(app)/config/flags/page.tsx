@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { apiListFlags, apiUpsertFlag, getStaff, hasPermission } from "@/lib/api";
+import { PAGE_SIZE, PaginationBar } from "@/components/pagination-bar";
 
 type Flag = { key: string; enabled: boolean; value: unknown; updatedAt: string };
 
@@ -10,6 +11,7 @@ export default function ConfigFlagsPage() {
   const t = useTranslations("flags");
   const tc = useTranslations("common");
   const [items, setItems] = useState<Flag[]>([]);
+  const [offset, setOffset] = useState(0);
   const [loading, setLoading] = useState(true);
   const [msg, setMsg] = useState("");
   const can = hasPermission(getStaff(), "flags:read");
@@ -61,7 +63,7 @@ export default function ConfigFlagsPage() {
                 </td>
               </tr>
             ) : (
-              items.map((f) => (
+              items.slice(offset, offset + PAGE_SIZE).map((f) => (
                 <tr key={f.key} className="border-t border-[var(--border)]">
                   <td className="px-4 py-3 font-mono-data text-xs">{f.key}</td>
                   <td className="px-4 py-3">
@@ -100,6 +102,7 @@ export default function ConfigFlagsPage() {
           </tbody>
         </table>
       </div>
+      <PaginationBar total={items.length} limit={PAGE_SIZE} offset={offset} onPage={setOffset} />
     </div>
   );
 }

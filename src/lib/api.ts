@@ -221,15 +221,16 @@ async function authFetch(path: string, init: RequestInit = {}) {
   return res;
 }
 
-export async function apiListUsers(q: string, status: string) {
+export async function apiListUsers(q: string, status: string, offset = 0, limit = 50) {
   const params = new URLSearchParams();
   if (q) params.set("q", q);
   if (status) params.set("status", status);
-  params.set("limit", "50");
+  params.set("limit", String(limit));
+  params.set("offset", String(offset));
   const res = await authFetch(`/api/v1/admin/users?${params}`);
   if (res.status === 403) throw Object.assign(new Error("forbidden"), { code: 403 });
   if (!res.ok) throw new Error(await parseError(res));
-  return res.json() as Promise<{ items: AppUser[]; total: number }>;
+  return res.json() as Promise<{ items: AppUser[]; total: number; limit: number; offset: number }>;
 }
 
 export async function apiGetUser(id: string) {
@@ -275,23 +276,31 @@ export async function apiUpdateUserStatus(id: string, status: string, reason: st
   return res.json();
 }
 
-async function listResource<T>(path: string, q = "", status = "", extra?: Record<string, string>) {
+async function listResource<T>(
+  path: string,
+  q = "",
+  status = "",
+  extra?: Record<string, string>,
+  offset = 0,
+  limit = 50,
+) {
   const params = new URLSearchParams();
   if (q) params.set("q", q);
   if (status) params.set("status", status);
   if (extra) Object.entries(extra).forEach(([k, v]) => v && params.set(k, v));
-  params.set("limit", "50");
+  params.set("limit", String(limit));
+  params.set("offset", String(offset));
   const res = await authFetch(`${path}?${params}`);
   if (res.status === 403) throw Object.assign(new Error("forbidden"), { code: 403 });
   if (!res.ok) throw new Error(await parseError(res));
-  return res.json() as Promise<{ items: T[]; total?: number }>;
+  return res.json() as Promise<{ items: T[]; total?: number; limit?: number; offset?: number }>;
 }
 
-export const apiListLinks = (q: string, status: string) =>
-  listResource<Record<string, unknown>>("/api/v1/admin/links", q, status);
+export const apiListLinks = (q: string, status: string, offset = 0) =>
+  listResource<Record<string, unknown>>("/api/v1/admin/links", q, status, undefined, offset);
 
-export const apiListDevices = (q: string, status: string) =>
-  listResource<Record<string, unknown>>("/api/v1/admin/devices", q, status);
+export const apiListDevices = (q: string, status: string, offset = 0) =>
+  listResource<Record<string, unknown>>("/api/v1/admin/devices", q, status, undefined, offset);
 
 export async function apiRevokeDevice(id: string, reason: string) {
   const res = await authFetch(`/api/v1/admin/devices/${id}/revoke`, {
@@ -303,11 +312,17 @@ export async function apiRevokeDevice(id: string, reason: string) {
   return res.json();
 }
 
-export const apiListSessions = (q: string, status: string) =>
-  listResource<Record<string, unknown>>("/api/v1/admin/sessions", q, status);
+export const apiListSessions = (q: string, status: string, offset = 0) =>
+  listResource<Record<string, unknown>>("/api/v1/admin/sessions", q, status, undefined, offset);
 
-export const apiListAudit = (q: string, action = "") =>
-  listResource<Record<string, unknown>>("/api/v1/admin/audit", q, "", action ? { action } : undefined);
+export const apiListAudit = (q: string, action = "", offset = 0) =>
+  listResource<Record<string, unknown>>(
+    "/api/v1/admin/audit",
+    q,
+    "",
+    action ? { action } : undefined,
+    offset,
+  );
 
 export async function apiListFlags() {
   const res = await authFetch(`/api/v1/admin/feature-flags`);
@@ -326,8 +341,8 @@ export async function apiUpsertFlag(key: string, enabled: boolean, value: unknow
   return res.json();
 }
 
-export const apiListTransfers = (q: string, status: string) =>
-  listResource<Record<string, unknown>>("/api/v1/admin/transfers", q, status);
+export const apiListTransfers = (q: string, status: string, offset = 0) =>
+  listResource<Record<string, unknown>>("/api/v1/admin/transfers", q, status, undefined, offset);
 
 export async function apiSystemProbe() {
   const [live, ready] = await Promise.all([
@@ -415,11 +430,14 @@ export async function apiPutLoanTip(body: LoanTipConfig) {
   return res.json();
 }
 
-export async function apiListLoanSimulations() {
-  const res = await authFetch(`/api/v1/admin/loans/simulations`);
+export async function apiListLoanSimulations(offset = 0, limit = 50) {
+  const params = new URLSearchParams();
+  params.set("limit", String(limit));
+  params.set("offset", String(offset));
+  const res = await authFetch(`/api/v1/admin/loans/simulations?${params}`);
   if (res.status === 403) throw Object.assign(new Error("forbidden"), { code: 403 });
   if (!res.ok) throw new Error(await parseError(res));
-  return res.json() as Promise<{ items: LoanSimulationAdmin[] }>;
+  return res.json() as Promise<{ items: LoanSimulationAdmin[]; total?: number }>;
 }
 
 export async function apiListInsurance() {

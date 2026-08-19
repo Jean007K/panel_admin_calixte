@@ -3,12 +3,14 @@
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { apiListProductsAdmin, getStaff, hasPermission, type ProductDefAdmin } from "@/lib/api";
+import { PAGE_SIZE, PaginationBar } from "@/components/pagination-bar";
 
 export default function ConfigProductsPage() {
   const t = useTranslations("config.products");
   const tc = useTranslations("common");
   const canRead = hasPermission(getStaff(), "products:read");
   const [items, setItems] = useState<ProductDefAdmin[]>([]);
+  const [offset, setOffset] = useState(0);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -60,7 +62,7 @@ export default function ConfigProductsPage() {
                 </td>
               </tr>
             ) : (
-              items.map((p) => (
+              items.slice(offset, offset + PAGE_SIZE).map((p) => (
                 <tr key={p.id} className="border-t border-[var(--border)]">
                   <td className="px-3 py-2 font-mono-data text-xs">{p.code}</td>
                   <td className="px-3 py-2">{p.name}</td>
@@ -75,6 +77,7 @@ export default function ConfigProductsPage() {
           </tbody>
         </table>
       </div>
+      <PaginationBar total={items.length} limit={PAGE_SIZE} offset={offset} onPage={setOffset} />
     </div>
   );
 }

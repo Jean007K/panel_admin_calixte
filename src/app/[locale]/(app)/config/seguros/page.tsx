@@ -10,6 +10,7 @@ import {
   hasPermission,
   type InsuranceProductAdmin,
 } from "@/lib/api";
+import { PAGE_SIZE, PaginationBar } from "@/components/pagination-bar";
 
 const empty: Partial<InsuranceProductAdmin> = {
   code: "",
@@ -28,6 +29,7 @@ export default function ConfigInsurancePage() {
   const canRead = hasPermission(getStaff(), "content:read");
   const canWrite = hasPermission(getStaff(), "insurance:write");
   const [items, setItems] = useState<InsuranceProductAdmin[]>([]);
+  const [offset, setOffset] = useState(0);
   const [form, setForm] = useState<Partial<InsuranceProductAdmin>>(empty);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -181,7 +183,7 @@ export default function ConfigInsurancePage() {
                 </td>
               </tr>
             ) : (
-              items.map((p) => (
+              items.slice(offset, offset + PAGE_SIZE).map((p) => (
                 <tr key={p.id} className="border-t border-[var(--border)]">
                   <td className="px-3 py-2">{p.title}</td>
                   <td className="px-3 py-2 text-[var(--text-muted)]">{p.code}</td>
@@ -221,6 +223,7 @@ export default function ConfigInsurancePage() {
           </tbody>
         </table>
       </div>
+      <PaginationBar total={items.length} limit={PAGE_SIZE} offset={offset} onPage={setOffset} />
     </div>
   );
 }

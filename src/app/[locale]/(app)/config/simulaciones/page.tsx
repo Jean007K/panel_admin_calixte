@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { apiListLoanSimulations, getStaff, hasPermission, type LoanSimulationAdmin } from "@/lib/api";
+import { PAGE_SIZE, PaginationBar } from "@/components/pagination-bar";
 
 function formatMinor(amountMinor: number) {
   return (amountMinor / 100).toLocaleString("es-DO", { minimumFractionDigits: 2 });
@@ -13,6 +14,8 @@ export default function ConfigLoanSimulationsPage() {
   const tc = useTranslations("common");
   const canRead = hasPermission(getStaff(), "loans:simulations:read");
   const [items, setItems] = useState<LoanSimulationAdmin[]>([]);
+  const [total, setTotal] = useState(0);
+  const [offset, setOffset] = useState(0);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -20,13 +23,14 @@ export default function ConfigLoanSimulationsPage() {
     (async () => {
       setLoading(true);
       try {
-        const data = await apiListLoanSimulations();
+        const data = await apiListLoanSimulations(offset);
         setItems(data.items || []);
+        setTotal(data.total || data.items?.length || 0);
       } finally {
         setLoading(false);
       }
     })();
-  }, [canRead]);
+  }, [canRead, offset]);
 
   if (!canRead) return <p className="text-sm text-[var(--danger)]">{t("forbidden")}</p>;
 
@@ -79,6 +83,7 @@ export default function ConfigLoanSimulationsPage() {
           </tbody>
         </table>
       </div>
+      <PaginationBar total={total} limit={PAGE_SIZE} offset={offset} onPage={setOffset} />
     </div>
   );
 }

@@ -11,6 +11,7 @@ import {
   hasPermission,
   type PromoAdmin,
 } from "@/lib/api";
+import { PAGE_SIZE, PaginationBar } from "@/components/pagination-bar";
 
 const empty: Partial<PromoAdmin> = {
   tag: "",
@@ -30,6 +31,7 @@ export default function ConfigAdsPage() {
   const canRead = hasPermission(getStaff(), "content:read");
   const canWrite = hasPermission(getStaff(), "content:write");
   const [items, setItems] = useState<PromoAdmin[]>([]);
+  const [offset, setOffset] = useState(0);
   const [form, setForm] = useState<Partial<PromoAdmin>>(empty);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -194,7 +196,7 @@ export default function ConfigAdsPage() {
                 </td>
               </tr>
             ) : (
-              items.map((p) => (
+              items.slice(offset, offset + PAGE_SIZE).map((p) => (
                 <tr key={p.id} className="border-t border-[var(--border)]">
                   <td className="px-3 py-2">{p.title}</td>
                   <td className="px-3 py-2 text-[var(--text-muted)]">{p.tag}</td>
@@ -233,6 +235,7 @@ export default function ConfigAdsPage() {
           </tbody>
         </table>
       </div>
+      <PaginationBar total={items.length} limit={PAGE_SIZE} offset={offset} onPage={setOffset} />
     </div>
   );
 }

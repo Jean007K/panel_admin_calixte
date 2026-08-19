@@ -45,6 +45,7 @@
     "empty": "Aucun utilisateur",
     "forbidden": "Pas d'autorisation pour voir les utilisateurs",
     "loadError": "Impossible de charger la liste",
+    "dossierLoadError": "Impossible de charger la fiche utilisateur",
     "notFound": "Utilisateur introuvable",
     "columns": {
       "phone": "Téléphone",
@@ -234,7 +235,10 @@
     "cancel": "Annuler",
     "allStatuses": "Tous",
     "status": "Statut",
-    "total": "enregistrements"
+    "total": "enregistrements",
+    "prev": "Précédent",
+    "next": "Suivant",
+    "pageOf": "Page {page} sur {pages}"
   }
 }
 

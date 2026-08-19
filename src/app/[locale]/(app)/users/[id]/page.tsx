@@ -133,7 +133,7 @@ export default function UserDetailPage() {
     return <p className="text-sm text-[var(--danger)]">{t("notFound")}</p>;
   }
   if (error === "load") {
-    return <p className="text-sm text-[var(--danger)]">{t("loadError")}</p>;
+    return <p className="text-sm text-[var(--danger)]">{t("dossierLoadError")}</p>;
   }
   if (!dossier) {
     return <p className="text-sm text-[var(--text-muted)]">{tc("loading")}</p>;

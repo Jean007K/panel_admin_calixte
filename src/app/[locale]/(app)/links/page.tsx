@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { apiListLinks, getStaff, hasPermission } from "@/lib/api";
+import { PAGE_SIZE, PaginationBar } from "@/components/pagination-bar";
 import { StatusChip } from "@/components/status-chip";
 
 export default function LinksPage() {
@@ -10,6 +11,7 @@ export default function LinksPage() {
   const tc = useTranslations("common");
   const [q, setQ] = useState("");
   const [status, setStatus] = useState("");
+  const [offset, setOffset] = useState(0);
   const [items, setItems] = useState<Record<string, unknown>[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -22,7 +24,7 @@ export default function LinksPage() {
     const timer = setTimeout(async () => {
       setLoading(true);
       try {
-        const data = await apiListLinks(q, status);
+        const data = await apiListLinks(q, status, offset);
         if (!cancelled) {
           setItems(data.items || []);
           setTotal(data.total || 0);
@@ -38,7 +40,7 @@ export default function LinksPage() {
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [q, status, can]);
+  }, [q, status, offset, can]);
 
   if (!can) return <p className="text-sm text-[var(--danger)]">{t("forbidden")}</p>;
 
@@ -54,13 +56,19 @@ export default function LinksPage() {
         <div className="flex gap-2">
           <input
             value={q}
-            onChange={(e) => setQ(e.target.value)}
+            onChange={(e) => {
+              setQ(e.target.value);
+              setOffset(0);
+            }}
             placeholder={t("search")}
             className="min-w-[220px] rounded border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm"
           />
           <select
             value={status}
-            onChange={(e) => setStatus(e.target.value)}
+            onChange={(e) => {
+              setStatus(e.target.value);
+              setOffset(0);
+            }}
             className="rounded border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm"
           >
             <option value="">{tc("allStatuses")}</option>
@@ -120,6 +128,7 @@ export default function LinksPage() {
           </tbody>
         </table>
       </div>
+      <PaginationBar total={total} limit={PAGE_SIZE} offset={offset} onPage={setOffset} />
     </div>
   );
 }
