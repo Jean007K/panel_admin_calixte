@@ -20,14 +20,15 @@ Backoffice de la **capa aplicación Calixte** (BFF), no un segundo Mifos. Contab
 
 ## Operating Context
 
-- Dominio: `panel.bcalixte.cc.cd`
+- Dominio: `panel.bcalixte.cc.cd` (desplegado)
 - Stack: Next.js + TypeScript; API admin en `bakend_calixte`
-- Auth: email + password (MFA fase posterior)
-- AuthZ: roles + permisos; `super_admin` tiene acceso total; cada pantalla y acción depende de permiso
-- Idiomas: español y francés, toggle en top-right
-- Tema: claro/oscuro, mismo cluster top-right
-- UX: shell tipo Salesforce/ERP (nav lateral, top bar, tablas densas)
-- MVP: login + shell + listado/detalle usuarios app + cambio de status
+- Auth: email + password (MFA = post soft launch)
+- AuthZ: roles + permisos; `super_admin` acceso total
+- Idiomas: español y francés
+- Tema: claro/oscuro
+- UX: shell tipo Salesforce/ERP
+- Estado 2026-08-07: ficha usuario 360 + Config app + Más + catálogo productos — **desarrollo**; soft launch 20–50 = gate P9 BFF (sin redesign en ese gate)
+- MVP histórico (login + users status) **superado**
 
 ## Capabilities and Constraints
 

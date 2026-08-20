@@ -4,11 +4,13 @@ Backoffice ops de Banco Calixte (capa BFF). **No** sustituye Mifos.
 
 | Campo | Valor |
 |-------|-------|
-| Dominio | `panel.bcalixte.cc.cd` (DNS a pedir al dueño) |
+| Dominio | `https://panel.bcalixte.cc.cd` |
 | Repo | https://github.com/Jean007K/panel_admin_calixte |
 | API | `NEXT_PUBLIC_API_BASE_URL` → `https://api.bcalixte.cc.cd` |
 | Stack | Next.js 15 · TypeScript · next-intl (es/fr) · tema claro/oscuro |
-| Diseño | `PRODUCT.md` · `DESIGN.md` · Impeccable |
+| Fase | **Desarrollo** — ficha 360 + Config + productos OK; MFA/staff UI = post soft launch |
+| Soft launch | Gate **P9** del BFF PATH (20–50 usuarios) — panel solo soporte ops, sin redesign en ese gate |
+| Diseño | `PRODUCT.md` · `DESIGN.md` |
 
 ## Arranque local
 
