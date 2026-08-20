@@ -10,6 +10,11 @@ export type Staff = {
   permissions: string[];
 };
 
+export function accountLast4Digits(raw?: string): string {
+  const d = (raw ?? "").replace(/\D/g, "");
+  return d.slice(-4);
+}
+
 export type AppUser = {
   id: string;
   phoneE164: string;

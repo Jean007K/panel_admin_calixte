@@ -8,6 +8,7 @@ import {
   apiGetUserDossier,
   apiRevokeDevice,
   apiUpdateUserStatus,
+  accountLast4Digits,
   getStaff,
   hasPermission,
   type UserDossier,
@@ -160,7 +161,9 @@ export default function UserDetailPage() {
             </div>
             <p className="font-mono-data text-sm text-[var(--text-muted)]">
               {user.phoneE164}
-              {user.accountLast4 ? ` · ****${user.accountLast4}` : ""}
+              {accountLast4Digits(user.accountLast4)
+                ? ` · ****${accountLast4Digits(user.accountLast4)}`
+                : ""}
               {user.lastLoginAt
                 ? ` · ${t("lastLogin")}: ${fmtDate(user.lastLoginAt, locale)}`
                 : ""}
