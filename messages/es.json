@@ -69,6 +69,7 @@
     "openMifos": "Abrir en Mifos",
     "tabs": {
       "summary": "Resumen",
+      "cards": "Tarjetas",
       "links": "Vínculos Core",
       "devices": "Dispositivos",
       "sessions": "Sesiones",
@@ -83,7 +84,39 @@
     "emptyAudit": "Sin eventos de auditoría",
     "emptyTransfers": "Sin transfers recientes",
     "revokeDevice": "Revocar",
-    "deviceRevoked": "Dispositivo revocado — la app pedirá login completo"
+    "deviceRevoked": "Dispositivo revocado — la app pedirá login completo",
+    "cards": {
+      "pciNote": "El panel no muestra PAN ni CVV. Esos datos solo los ve el cliente en su teléfono.",
+      "empty": "Este cliente aún no tiene tarjetas.",
+      "loadError": "No se pudieron cargar las tarjetas",
+      "kindVirtual": "Virtual",
+      "kindPhysical": "Física",
+      "issued": "Emitida en el emisor",
+      "notIssued": "Pendiente de emisión",
+      "issueVirtual": "Crear virtual",
+      "issuePhysical": "Crear física",
+      "issuePhysicalExisting": "Emitir / actualizar física",
+      "issuedVirtual": "Tarjeta virtual creada",
+      "issuedPhysical": "Tarjeta física creada o emitida",
+      "fulfillment": "Estado logístico",
+      "fulfillmentUpdated": "Estado logístico actualizado",
+      "freeze": "Bloqueo temporal",
+      "unfreeze": "Desbloquear",
+      "frozen": "Tarjeta bloqueada temporalmente",
+      "unfrozen": "Tarjeta desbloqueada",
+      "disable": "Bloqueo definitivo",
+      "disableConfirm": "¿Bloquear esta tarjeta de forma definitiva? No se puede revertir.",
+      "disabled": "Tarjeta bloqueada de forma definitiva",
+      "status": {
+        "processing": "Procesando",
+        "manufacturing": "Fabricación",
+        "shipping": "Envío",
+        "activation": "Activación",
+        "active": "Activa",
+        "frozen": "Bloqueo temporal",
+        "cancelled": "Bloqueo definitivo"
+      }
+    }
   },
   "links": {
     "title": "Vínculos Core",

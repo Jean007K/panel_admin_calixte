@@ -14,10 +14,11 @@ import {
   type UserDossier,
 } from "@/lib/api";
 import { StatusChip } from "@/components/status-chip";
+import { UserCardsPanel } from "@/components/user-cards-panel";
 
 const STATUSES = ["active", "pending", "locked", "suspended", "disabled", "closed"];
 
-type TabId = "summary" | "links" | "devices" | "sessions" | "audit" | "transfers";
+type TabId = "summary" | "cards" | "links" | "devices" | "sessions" | "audit" | "transfers";
 
 function str(v: unknown): string {
   if (v == null) return "—";
@@ -118,6 +119,7 @@ export default function UserDetailPage() {
     () =>
       [
         { id: "summary" as const, label: t("tabs.summary") },
+        { id: "cards" as const, label: t("tabs.cards") },
         { id: "links" as const, label: t("tabs.links") },
         { id: "devices" as const, label: t("tabs.devices") },
         { id: "sessions" as const, label: t("tabs.sessions") },
@@ -274,6 +276,15 @@ export default function UserDetailPage() {
               <p className="text-sm text-[var(--text-muted)]">{t("noPermissionAction")}</p>
             )}
           </div>
+        ) : null}
+
+        {tab === "cards" ? (
+          <UserCardsPanel
+            userId={id}
+            holderName={user.displayName}
+            canWrite={canUpdate}
+            t={t}
+          />
         ) : null}
 
         {tab === "links" ? (

@@ -471,3 +471,66 @@ export async function apiDeleteInsurance(id: string) {
   return res.json();
 }
 
+export type AdminUserCard = {
+  id: string;
+  kind: "virtual" | "physical" | string;
+  status: string;
+  maskedPan: string;
+  expMonth?: number;
+  expYear?: number;
+  holderName: string;
+  lastStatusAt?: string;
+  issuerLinked?: boolean;
+};
+
+export async function apiListUserCards(userId: string) {
+  const res = await authFetch(`/api/v1/admin/users/${encodeURIComponent(userId)}/cards`);
+  if (res.status === 403) throw Object.assign(new Error("forbidden"), { code: 403 });
+  if (!res.ok) throw new Error(await parseError(res));
+  return res.json() as Promise<{ items: AdminUserCard[] }>;
+}
+
+export async function apiIssueUserCard(
+  userId: string,
+  kind: "virtual" | "physical",
+  holderName?: string,
+) {
+  const res = await authFetch(`/api/v1/admin/users/${encodeURIComponent(userId)}/cards`, {
+    method: "POST",
+    body: JSON.stringify({ kind, holderName }),
+  });
+  if (res.status === 403) throw Object.assign(new Error("forbidden"), { code: 403 });
+  if (!res.ok) throw new Error(await parseError(res));
+  return res.json() as Promise<AdminUserCard>;
+}
+
+export async function apiSetCardFulfillment(userId: string, cardId: string, status: string) {
+  const res = await authFetch(
+    `/api/v1/admin/users/${encodeURIComponent(userId)}/cards/${encodeURIComponent(cardId)}/fulfillment`,
+    { method: "PATCH", body: JSON.stringify({ status }) },
+  );
+  if (res.status === 403) throw Object.assign(new Error("forbidden"), { code: 403 });
+  if (!res.ok) throw new Error(await parseError(res));
+  return res.json() as Promise<AdminUserCard>;
+}
+
+export async function apiFreezeUserCard(userId: string, cardId: string, frozen: boolean) {
+  const res = await authFetch(
+    `/api/v1/admin/users/${encodeURIComponent(userId)}/cards/${encodeURIComponent(cardId)}/freeze`,
+    { method: "POST", body: JSON.stringify({ frozen }) },
+  );
+  if (res.status === 403) throw Object.assign(new Error("forbidden"), { code: 403 });
+  if (!res.ok) throw new Error(await parseError(res));
+  return res.json() as Promise<AdminUserCard>;
+}
+
+export async function apiDisableUserCard(userId: string, cardId: string) {
+  const res = await authFetch(
+    `/api/v1/admin/users/${encodeURIComponent(userId)}/cards/${encodeURIComponent(cardId)}/disable`,
+    { method: "POST" },
+  );
+  if (res.status === 403) throw Object.assign(new Error("forbidden"), { code: 403 });
+  if (!res.ok) throw new Error(await parseError(res));
+  return res.json() as Promise<AdminUserCard>;
+}
+

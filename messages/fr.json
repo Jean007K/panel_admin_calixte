@@ -69,6 +69,7 @@
     "openMifos": "Ouvrir dans Mifos",
     "tabs": {
       "summary": "Résumé",
+      "cards": "Cartes",
       "links": "Liens Core",
       "devices": "Appareils",
       "sessions": "Sessions",
@@ -83,7 +84,39 @@
     "emptyAudit": "Aucun événement d'audit",
     "emptyTransfers": "Aucun transfer récent",
     "revokeDevice": "Révoquer",
-    "deviceRevoked": "Appareil révoqué — l'app demandera un login complet"
+    "deviceRevoked": "Appareil révoqué — l'app demandera un login complet",
+    "cards": {
+      "pciNote": "Le panneau n'affiche ni PAN ni CVV. Ces données ne sont visibles que sur le téléphone du client.",
+      "empty": "Ce client n'a pas encore de cartes.",
+      "loadError": "Impossible de charger les cartes",
+      "kindVirtual": "Virtuelle",
+      "kindPhysical": "Physique",
+      "issued": "Émise chez l'émetteur",
+      "notIssued": "En attente d'émission",
+      "issueVirtual": "Créer une virtuelle",
+      "issuePhysical": "Créer une physique",
+      "issuePhysicalExisting": "Émettre / mettre à jour la physique",
+      "issuedVirtual": "Carte virtuelle créée",
+      "issuedPhysical": "Carte physique créée ou émise",
+      "fulfillment": "Statut logistique",
+      "fulfillmentUpdated": "Statut logistique mis à jour",
+      "freeze": "Blocage temporaire",
+      "unfreeze": "Débloquer",
+      "frozen": "Carte bloquée temporairement",
+      "unfrozen": "Carte débloquée",
+      "disable": "Blocage définitif",
+      "disableConfirm": "Bloquer cette carte définitivement ? Irréversible.",
+      "disabled": "Carte bloquée définitivement",
+      "status": {
+        "processing": "Traitement",
+        "manufacturing": "Fabrication",
+        "shipping": "Envoi",
+        "activation": "Activation",
+        "active": "Active",
+        "frozen": "Blocage temporaire",
+        "cancelled": "Blocage définitif"
+      }
+    }
   },
   "links": {
     "title": "Liens Core",
