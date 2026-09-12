@@ -73,7 +73,10 @@ export function UserCardsPanel({
     }
   }
 
-  const hasKind = (k: string) => items.some((c) => c.kind === k);
+  const hasLiveKind = (k: string) =>
+    items.some((c) => c.kind === k && c.status !== "cancelled");
+  const live = items.filter((c) => c.status !== "cancelled");
+  const history = items.filter((c) => c.status === "cancelled");
 
   return (
     <div className="space-y-4">
@@ -82,7 +85,7 @@ export function UserCardsPanel({
         <div className="flex flex-wrap gap-2">
           <button
             type="button"
-            disabled={busy || hasKind("virtual")}
+            disabled={busy || hasLiveKind("virtual")}
             className="rounded bg-[var(--accent)] px-3 py-1.5 text-sm font-semibold text-[var(--accent-fg)] disabled:opacity-50"
             onClick={() =>
               run(
@@ -104,7 +107,7 @@ export function UserCardsPanel({
               )
             }
           >
-            {hasKind("physical") ? t("cards.issuePhysicalExisting") : t("cards.issuePhysical")}
+            {hasLiveKind("physical") ? t("cards.issuePhysicalExisting") : t("cards.issuePhysical")}
           </button>
         </div>
       ) : null}
@@ -116,7 +119,10 @@ export function UserCardsPanel({
         <p className="text-sm text-[var(--text-muted)]">{t("cards.empty")}</p>
       ) : (
         <div className="space-y-4">
-          {items.map((card) => {
+          {live.length === 0 && history.length > 0 ? (
+            <p className="text-sm text-[var(--text-muted)]">{t("cards.historyOnly")}</p>
+          ) : null}
+          {[...live, ...history].map((card) => {
             const fulfillment = FULFILLMENT.includes(card.status as (typeof FULFILLMENT)[number]);
             const canLock = card.status === "active" || card.status === "frozen";
             return (

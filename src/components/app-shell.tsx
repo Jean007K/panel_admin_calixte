@@ -73,6 +73,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     match: "/users",
   };
 
+  const cardsItem: NavLeaf = {
+    href: `/${locale}/cards`,
+    labelKey: "nav.cards",
+    perm: "users:read",
+    match: "/cards",
+  };
+
   const groups: NavGroup[] = [
     {
       id: "config",
@@ -167,9 +174,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           {hasPermission(staff, usersItem.perm) ? (
             <Link
               href={usersItem.href}
-              className={leafClass(pathname.includes(usersItem.match))}
+              className={leafClass(pathname.includes(usersItem.match) && !pathname.includes("/cards"))}
             >
               {t(usersItem.labelKey)}
+            </Link>
+          ) : null}
+          {hasPermission(staff, cardsItem.perm) ? (
+            <Link
+              href={cardsItem.href}
+              className={leafClass(pathname.includes(cardsItem.match))}
+            >
+              {t(cardsItem.labelKey)}
             </Link>
           ) : null}
 

@@ -476,12 +476,41 @@ export type AdminUserCard = {
   kind: "virtual" | "physical" | string;
   status: string;
   maskedPan: string;
+  brand?: string;
   expMonth?: number;
   expYear?: number;
   holderName: string;
+  createdAt?: string;
   lastStatusAt?: string;
   issuerLinked?: boolean;
 };
+
+export type AdminDeskCard = AdminUserCard & {
+  userId: string;
+  phoneE164: string;
+  displayName: string;
+};
+
+export async function apiListAllCards(params: {
+  q?: string;
+  status?: string;
+  kind?: string;
+  offset?: number;
+}) {
+  const qs = new URLSearchParams();
+  if (params.q) qs.set("q", params.q);
+  if (params.status) qs.set("status", params.status);
+  if (params.kind) qs.set("kind", params.kind);
+  if (params.offset) qs.set("offset", String(params.offset));
+  const res = await authFetch(`/api/v1/admin/cards?${qs.toString()}`);
+  if (res.status === 403) throw Object.assign(new Error("forbidden"), { code: 403 });
+  if (!res.ok) throw new Error(await parseError(res));
+  return res.json() as Promise<{
+    items: AdminDeskCard[];
+    total: number;
+    counts: Record<string, number>;
+  }>;
+}
 
 export async function apiListUserCards(userId: string) {
   const res = await authFetch(`/api/v1/admin/users/${encodeURIComponent(userId)}/cards`);

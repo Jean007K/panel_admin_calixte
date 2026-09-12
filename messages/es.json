@@ -20,6 +20,7 @@
     "flags": "Feature flags",
     "audit": "Auditoría",
     "ops": "Ops / Transfers",
+    "cards": "Tarjetas",
     "mifos": "Mifos (Core)"
   },
   "topbar": {
@@ -88,6 +89,7 @@
     "cards": {
       "pciNote": "El panel no muestra PAN ni CVV. Esos datos solo los ve el cliente en su teléfono.",
       "empty": "Este cliente aún no tiene tarjetas.",
+      "historyOnly": "Solo quedan tarjetas en historial. Puedes crear otra.",
       "loadError": "No se pudieron cargar las tarjetas",
       "kindVirtual": "Virtual",
       "kindPhysical": "Física",
@@ -253,6 +255,39 @@
     "search": "Actor, acción, recurso…",
     "empty": "Sin eventos",
     "forbidden": "Sin permiso"
+  },
+  "cardsDesk": {
+    "title": "Gestión de tarjetas",
+    "subtitle": "Solicitudes, uso, bloqueos y logística del plástico.",
+    "search": "Teléfono, nombre, last4 o ID",
+    "empty": "No hay tarjetas con ese filtro",
+    "forbidden": "Sin permiso para ver tarjetas",
+    "loadError": "No se pudo cargar el escritorio de tarjetas",
+    "refresh": "Actualizar",
+    "allKinds": "Todos los tipos",
+    "pipeline": "Embudo físico",
+    "physicalOpen": "plásticos en ciclo",
+    "advance": "Avanzar",
+    "advanced": "Estado avanzado",
+    "openClient": "Abrir cliente",
+    "actionError": "No se pudo completar la acción",
+    "kpi": {
+      "total": "Total",
+      "inUse": "En uso",
+      "frozen": "Congeladas",
+      "cancelled": "Bloqueadas",
+      "virtual": "Virtuales",
+      "physical": "Físicas"
+    },
+    "columns": {
+      "client": "Cliente",
+      "kind": "Tipo",
+      "pan": "Tarjeta",
+      "status": "Estado",
+      "requested": "Solicitada",
+      "aging": "En estado",
+      "actions": "Acciones"
+    }
   },
   "ops": {
     "title": "Ops — transfers",

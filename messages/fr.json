@@ -20,6 +20,7 @@
     "flags": "Feature flags",
     "audit": "Audit",
     "ops": "Ops / Transfers",
+    "cards": "Cartes",
     "mifos": "Mifos (Core)"
   },
   "topbar": {
@@ -88,6 +89,7 @@
     "cards": {
       "pciNote": "Le panneau n'affiche ni PAN ni CVV. Ces données ne sont visibles que sur le téléphone du client.",
       "empty": "Ce client n'a pas encore de cartes.",
+      "historyOnly": "Il ne reste que l'historique. Vous pouvez en créer une autre.",
       "loadError": "Impossible de charger les cartes",
       "kindVirtual": "Virtuelle",
       "kindPhysical": "Physique",
@@ -253,6 +255,39 @@
     "search": "Acteur, action, ressource…",
     "empty": "Aucun événement",
     "forbidden": "Pas d'autorisation"
+  },
+  "cardsDesk": {
+    "title": "Gestion des cartes",
+    "subtitle": "Demandes, usage, blocages et logistique du plastique.",
+    "search": "Téléphone, nom, last4 ou ID",
+    "empty": "Aucune carte pour ce filtre",
+    "forbidden": "Sans permission pour voir les cartes",
+    "loadError": "Impossible de charger le bureau des cartes",
+    "refresh": "Actualiser",
+    "allKinds": "Tous les types",
+    "pipeline": "Entonnoir physique",
+    "physicalOpen": "plastiques en cycle",
+    "advance": "Avancer",
+    "advanced": "Statut avancé",
+    "openClient": "Ouvrir le client",
+    "actionError": "Action impossible",
+    "kpi": {
+      "total": "Total",
+      "inUse": "En usage",
+      "frozen": "Gelées",
+      "cancelled": "Bloquées",
+      "virtual": "Virtuelles",
+      "physical": "Physiques"
+    },
+    "columns": {
+      "client": "Client",
+      "kind": "Type",
+      "pan": "Carte",
+      "status": "Statut",
+      "requested": "Demandée",
+      "aging": "Dans l'état",
+      "actions": "Actions"
+    }
   },
   "ops": {
     "title": "Ops — transfers",
