@@ -20,6 +20,8 @@
     "flags": "Feature flags",
     "audit": "Audit",
     "ops": "Ops / Transfers",
+    "support": "Support",
+    "accountRequests": "Comptes extra",
     "cards": "Cartes",
     "mifos": "Mifos (Core)"
   },
@@ -75,7 +77,8 @@
       "devices": "Appareils",
       "sessions": "Sessions",
       "audit": "Audit",
-      "transfers": "Transfers"
+      "transfers": "Transfers",
+      "notifications": "Notifications"
     },
     "sessionsActive": "Sessions actives",
     "sessionsHistory": "Historique",

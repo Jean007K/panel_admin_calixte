@@ -563,3 +563,44 @@ export async function apiDisableUserCard(userId: string, cardId: string) {
   return res.json() as Promise<AdminUserCard>;
 }
 
+export async function apiListSupport(status = "", offset = 0) {
+  const qs = new URLSearchParams();
+  if (status) qs.set("status", status);
+  if (offset) qs.set("offset", String(offset));
+  const res = await authFetch(`/api/v1/admin/support?${qs.toString()}`);
+  if (res.status === 403) throw Object.assign(new Error("forbidden"), { code: 403 });
+  if (!res.ok) throw new Error(await parseError(res));
+  return res.json() as Promise<{ items: Record<string, unknown>[]; total: number }>;
+}
+
+export async function apiSetSupportStatus(id: string, status: string) {
+  const res = await authFetch(`/api/v1/admin/support/${encodeURIComponent(id)}`, {
+    method: "PATCH",
+    body: JSON.stringify({ status }),
+  });
+  if (res.status === 403) throw Object.assign(new Error("forbidden"), { code: 403 });
+  if (!res.ok) throw new Error(await parseError(res));
+  return res.json() as Promise<{ id: string; status: string }>;
+}
+
+export async function apiListAccountRequests(status = "", offset = 0) {
+  const qs = new URLSearchParams();
+  if (status) qs.set("status", status);
+  if (offset) qs.set("offset", String(offset));
+  const res = await authFetch(`/api/v1/admin/account-requests?${qs.toString()}`);
+  if (res.status === 403) throw Object.assign(new Error("forbidden"), { code: 403 });
+  if (!res.ok) throw new Error(await parseError(res));
+  return res.json() as Promise<{ items: Record<string, unknown>[]; total: number }>;
+}
+
+export async function apiListUserNotifications(userId: string, offset = 0) {
+  const qs = new URLSearchParams();
+  if (offset) qs.set("offset", String(offset));
+  const res = await authFetch(
+    `/api/v1/admin/users/${encodeURIComponent(userId)}/notifications?${qs.toString()}`,
+  );
+  if (res.status === 403) throw Object.assign(new Error("forbidden"), { code: 403 });
+  if (!res.ok) throw new Error(await parseError(res));
+  return res.json() as Promise<{ items: Record<string, unknown>[]; total: number }>;
+}
+

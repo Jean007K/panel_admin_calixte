@@ -6,6 +6,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { useParams } from "next/navigation";
 import {
   apiGetUserDossier,
+  apiListUserNotifications,
   apiRevokeDevice,
   apiUpdateUserStatus,
   accountLast4Digits,
@@ -18,7 +19,15 @@ import { UserCardsPanel } from "@/components/user-cards-panel";
 
 const STATUSES = ["active", "pending", "locked", "suspended", "disabled", "closed"];
 
-type TabId = "summary" | "cards" | "links" | "devices" | "sessions" | "audit" | "transfers";
+type TabId =
+  | "summary"
+  | "cards"
+  | "links"
+  | "devices"
+  | "sessions"
+  | "audit"
+  | "transfers"
+  | "notifications";
 
 function str(v: unknown): string {
   if (v == null) return "—";
@@ -125,6 +134,7 @@ export default function UserDetailPage() {
         { id: "sessions" as const, label: t("tabs.sessions") },
         { id: "audit" as const, label: t("tabs.audit") },
         { id: "transfers" as const, label: t("tabs.transfers") },
+        { id: "notifications" as const, label: t("tabs.notifications") },
       ] as const,
     [t],
   );
@@ -420,6 +430,8 @@ export default function UserDetailPage() {
           />
         ) : null}
 
+        {tab === "notifications" ? <UserNotifications userId={id} /> : null}
+
         {tab === "transfers" ? (
           <DataTable
             empty={t("emptyTransfers")}
@@ -435,6 +447,60 @@ export default function UserDetailPage() {
             locale={locale}
           />
         ) : null}
+      </div>
+    </div>
+  );
+}
+
+function UserNotifications({ userId }: { userId: string }) {
+  const [items, setItems] = useState<Record<string, unknown>[]>([]);
+  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let live = true;
+    setLoading(true);
+    apiListUserNotifications(userId)
+      .then((data) => {
+        if (!live) return;
+        setItems(data.items || []);
+        setTotal(data.total || 0);
+      })
+      .finally(() => {
+        if (live) setLoading(false);
+      });
+    return () => {
+      live = false;
+    };
+  }, [userId]);
+
+  if (loading) return <p className="text-sm text-[var(--text-muted)]">Cargando…</p>;
+  if (!items.length) return <p className="text-sm text-[var(--text-muted)]">Sin notificaciones</p>;
+
+  return (
+    <div className="space-y-2">
+      <p className="text-xs text-[var(--text-muted)]">{total} en total</p>
+      <div className="overflow-x-auto border border-[var(--border)]">
+        <table className="w-full text-left text-sm">
+          <thead className="border-b border-[var(--border)] bg-[var(--surface-2)] text-xs uppercase text-[var(--text-muted)]">
+            <tr>
+              <th className="px-3 py-2">Tipo</th>
+              <th className="px-3 py-2">Título</th>
+              <th className="px-3 py-2">Cuerpo</th>
+              <th className="px-3 py-2">Fecha</th>
+            </tr>
+          </thead>
+          <tbody>
+            {items.map((n) => (
+              <tr key={String(n.id)} className="border-t border-[var(--border)]">
+                <td className="px-3 py-2 font-mono-data text-xs">{String(n.eventType || n.category || "")}</td>
+                <td className="px-3 py-2">{String(n.title || "")}</td>
+                <td className="px-3 py-2 text-[var(--text-muted)]">{String(n.body || "")}</td>
+                <td className="px-3 py-2 text-xs">{String(n.createdAt || "")}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );

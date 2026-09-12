@@ -41,6 +41,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       pathname.includes("/sessions") ||
       pathname.includes("/audit") ||
       pathname.includes("/ops") ||
+      pathname.includes("/support") ||
+      pathname.includes("/account-requests") ||
       pathname.includes("/config/simulaciones")
     ) {
       setOpen((o) => ({ ...o, more: true }));
@@ -142,6 +144,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         },
         { href: `/${locale}/audit`, labelKey: "nav.audit", perm: "audit:read", match: "/audit" },
         { href: `/${locale}/ops`, labelKey: "nav.ops", perm: "ops:read", match: "/ops" },
+        { href: `/${locale}/support`, labelKey: "nav.support", perm: "users:read", match: "/support" },
+        {
+          href: `/${locale}/account-requests`,
+          labelKey: "nav.accountRequests",
+          perm: "users:read",
+          match: "/account-requests",
+        },
         {
           href: `/${locale}/config/simulaciones`,
           labelKey: "nav.configSimulations",
