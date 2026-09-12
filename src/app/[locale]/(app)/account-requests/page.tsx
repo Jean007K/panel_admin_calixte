@@ -97,7 +97,7 @@ export default function AccountRequestsPage() {
                   <td className="px-3 py-2">{String(row.productCode || "")}</td>
                   <td className="px-3 py-2">{String(row.note || "")}</td>
                   <td className="px-3 py-2">
-                    <StatusChip value={String(row.status || "")} />
+                    <StatusChip status={String(row.status || "")} />
                   </td>
                   <td className="px-3 py-2 text-[var(--text-muted)]">{String(row.createdAt || "")}</td>
                 </tr>

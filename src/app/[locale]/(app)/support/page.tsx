@@ -98,7 +98,7 @@ export default function SupportPage() {
                   </td>
                   <td className="px-3 py-2">{String(row.message || "")}</td>
                   <td className="px-3 py-2">
-                    <StatusChip value={String(row.status || "")} />
+                    <StatusChip status={String(row.status || "")} />
                   </td>
                   <td className="px-3 py-2 text-[var(--text-muted)]">{String(row.createdAt || "")}</td>
                   <td className="px-3 py-2 text-right">
