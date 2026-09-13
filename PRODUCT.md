@@ -27,7 +27,7 @@ Backoffice de la **capa aplicación Calixte** (BFF), no un segundo Mifos. Contab
 - Idiomas: español y francés
 - Tema: claro/oscuro
 - UX: shell tipo Salesforce/ERP
-- Estado 2026-08-07: ficha usuario 360 + Config app + Más + catálogo productos — **desarrollo**; soft launch 20–50 = gate P9 BFF (sin redesign en ese gate)
+- Estado **2026-09-13**: ficha 360, tarjetas, Soporte, Cuentas extra, notifs de usuario, catálogo. Soft launch 20–50 = P9 BFF.
 - MVP histórico (login + users status) **superado**
 
 ## Capabilities and Constraints
@@ -38,7 +38,7 @@ Backoffice de la **capa aplicación Calixte** (BFF), no un segundo Mifos. Contab
 - Endpoint legado `PATCH /api/v1/internal/users/:id/status` (token interno) evoluciona a `/api/v1/admin/users/:id/status` con permiso `users:update_status`.
 - Roles semilla: `super_admin`, `ops`, `support_l1`, `executive`, `manager`, `area_head`.
 - Repo: https://github.com/Jean007K/panel_admin_calixte
-- Undecided (fase +1): MFA, gestión UI de staff/roles, devices/flags/audit screens.
+- Hecho: devices, flags, audit, ops, support, account-requests. Staff MFA del panel = post soft launch.
 
 ## Brand Commitments
 
