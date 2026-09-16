@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { useParams } from "next/navigation";
 import {
+  apiDeleteUser,
   apiGetUserDossier,
   apiListUserNotifications,
   apiRevokeDevice,
@@ -76,6 +77,8 @@ export default function UserDetailPage() {
   const canUpdate = hasPermission(getStaff(), "users:update_status");
   const canRead = hasPermission(getStaff(), "users:read");
   const canRevokeDevice = hasPermission(getStaff(), "devices:revoke");
+  const canDelete = hasPermission(getStaff(), "users:delete");
+  const routerLocale = locale;
 
   const load = async () => {
     const d = await apiGetUserDossier(id);
@@ -104,6 +107,22 @@ export default function UserDetailPage() {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, canRead]);
+
+  async function onDeleteUser() {
+    const ob = dossier?.onboarding || dossier?.user.onboarding;
+    if (!canDelete || ob !== "missing") return;
+    if (!window.confirm(t("deleteConfirm"))) return;
+    setBusy(true);
+    setMsg("");
+    try {
+      await apiDeleteUser(id);
+      window.location.href = `/${routerLocale}/users`;
+    } catch (e) {
+      const code = (e as { code?: number }).code;
+      setMsg(code === 403 ? t("deleteForbidden") : t("deleteError"));
+      setBusy(false);
+    }
+  }
 
   async function onSave(e: FormEvent) {
     e.preventDefault();
@@ -192,6 +211,16 @@ export default function UserDetailPage() {
               >
                 {t("openMifos")} ↗
               </a>
+            ) : null}
+            {canDelete && (dossier.onboarding || user.onboarding) === "missing" ? (
+              <button
+                type="button"
+                disabled={busy}
+                onClick={onDeleteUser}
+                className="rounded border border-[var(--danger)] px-3 py-1.5 text-sm text-[var(--danger)] disabled:opacity-50"
+              >
+                {t("delete")}
+              </button>
             ) : null}
           </div>
         </div>

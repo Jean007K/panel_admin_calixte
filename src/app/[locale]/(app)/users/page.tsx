@@ -3,11 +3,18 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
-import { apiListUsers, getStaff, hasPermission, type AppUser } from "@/lib/api";
+import {
+  apiDeleteUser,
+  apiListUsers,
+  getStaff,
+  hasPermission,
+  type AppUser,
+} from "@/lib/api";
 import { PAGE_SIZE, PaginationBar } from "@/components/pagination-bar";
 import { StatusChip } from "@/components/status-chip";
 
 const STATUSES = ["", "active", "pending", "locked", "suspended", "disabled", "closed"];
+const ONBOARDING = ["", "missing", "partial", "linked"];
 
 export default function UsersPage() {
   const t = useTranslations("users");
@@ -15,12 +22,16 @@ export default function UsersPage() {
   const locale = useLocale();
   const [q, setQ] = useState("");
   const [status, setStatus] = useState("");
+  const [onboarding, setOnboarding] = useState("");
   const [offset, setOffset] = useState(0);
   const [items, setItems] = useState<AppUser[]>([]);
   const [total, setTotal] = useState(0);
   const [error, setError] = useState<"forbidden" | "load" | null>(null);
   const [loading, setLoading] = useState(true);
+  const [busyId, setBusyId] = useState<string | null>(null);
+  const [flash, setFlash] = useState("");
   const canRead = hasPermission(getStaff(), "users:read");
+  const canDelete = hasPermission(getStaff(), "users:delete");
 
   useEffect(() => {
     if (!canRead) {
@@ -33,7 +44,7 @@ export default function UsersPage() {
       setLoading(true);
       setError(null);
       try {
-        const data = await apiListUsers(q, status, offset);
+        const data = await apiListUsers(q, status, offset, PAGE_SIZE, onboarding);
         if (!cancelled) {
           setItems(data.items || []);
           setTotal(data.total);
@@ -50,7 +61,25 @@ export default function UsersPage() {
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [q, status, offset, canRead]);
+  }, [q, status, onboarding, offset, canRead]);
+
+  async function onDelete(u: AppUser) {
+    if (!canDelete || u.onboarding !== "missing") return;
+    if (!window.confirm(t("deleteConfirm"))) return;
+    setBusyId(u.id);
+    setFlash("");
+    try {
+      await apiDeleteUser(u.id);
+      setItems((prev) => prev.filter((x) => x.id !== u.id));
+      setTotal((n) => Math.max(0, n - 1));
+      setFlash(t("deleteOk"));
+    } catch (e) {
+      const code = (e as { code?: number }).code;
+      setFlash(code === 403 ? t("deleteForbidden") : t("deleteError"));
+    } finally {
+      setBusyId(null);
+    }
+  }
 
   if (error === "forbidden") {
     return <p className="text-sm text-[var(--danger)]">{t("forbidden")}</p>;
@@ -62,6 +91,7 @@ export default function UsersPage() {
         <div>
           <h1 className="font-display text-2xl tracking-tight">{t("title")}</h1>
           <p className="mt-1 text-sm text-[var(--text-muted)]">{total} registros</p>
+          {flash ? <p className="mt-1 text-sm text-[var(--accent)]">{flash}</p> : null}
         </div>
         <div className="flex flex-wrap gap-2">
           <input
@@ -88,6 +118,27 @@ export default function UsersPage() {
               </option>
             ))}
           </select>
+          <select
+            value={onboarding}
+            onChange={(e) => {
+              setOnboarding(e.target.value);
+              setOffset(0);
+            }}
+            className="rounded border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm"
+            aria-label={t("onboardingFilter")}
+          >
+            {ONBOARDING.map((s) => (
+              <option key={s || "all-ob"} value={s}>
+                {s === ""
+                  ? t("allOnboarding")
+                  : s === "missing"
+                    ? t("onboardingMissing")
+                    : s === "partial"
+                      ? t("onboardingPartial")
+                      : t("onboardingLinked")}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
 
@@ -100,24 +151,25 @@ export default function UsersPage() {
               <th className="px-4 py-3 font-medium">{t("columns.status")}</th>
               <th className="px-4 py-3 font-medium">{t("columns.onboarding")}</th>
               <th className="px-4 py-3 font-medium">{t("columns.updated")}</th>
+              <th className="px-4 py-3 font-medium" />
             </tr>
           </thead>
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={5} className="px-4 py-8 text-[var(--text-muted)]">
+                <td colSpan={6} className="px-4 py-8 text-[var(--text-muted)]">
                   {tc("loading")}
                 </td>
               </tr>
             ) : error === "load" ? (
               <tr>
-                <td colSpan={5} className="px-4 py-8 text-[var(--danger)]">
+                <td colSpan={6} className="px-4 py-8 text-[var(--danger)]">
                   {t("loadError")}
                 </td>
               </tr>
             ) : items.length === 0 ? (
               <tr>
-                <td colSpan={5} className="px-4 py-8 text-[var(--text-muted)]">
+                <td colSpan={6} className="px-4 py-8 text-[var(--text-muted)]">
                   {t("empty")}
                 </td>
               </tr>
@@ -158,6 +210,18 @@ export default function UsersPage() {
                   </td>
                   <td className="px-4 py-3 text-[var(--text-muted)]">
                     {u.updatedAt ? new Date(u.updatedAt).toLocaleString(locale) : "—"}
+                  </td>
+                  <td className="px-4 py-3 text-right">
+                    {canDelete && u.onboarding === "missing" ? (
+                      <button
+                        type="button"
+                        disabled={busyId === u.id}
+                        onClick={() => onDelete(u)}
+                        className="rounded border border-[var(--danger)] px-2 py-1 text-xs text-[var(--danger)] disabled:opacity-50"
+                      >
+                        {busyId === u.id ? "…" : t("delete")}
+                      </button>
+                    ) : null}
                   </td>
                 </tr>
               ))

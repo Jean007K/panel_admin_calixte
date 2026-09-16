@@ -226,16 +226,34 @@ async function authFetch(path: string, init: RequestInit = {}) {
   return res;
 }
 
-export async function apiListUsers(q: string, status: string, offset = 0, limit = 50) {
+export async function apiListUsers(
+  q: string,
+  status: string,
+  offset = 0,
+  limit = 50,
+  onboarding = "",
+) {
   const params = new URLSearchParams();
   if (q) params.set("q", q);
   if (status) params.set("status", status);
+  if (onboarding) params.set("onboarding", onboarding);
   params.set("limit", String(limit));
   params.set("offset", String(offset));
   const res = await authFetch(`/api/v1/admin/users?${params}`);
   if (res.status === 403) throw Object.assign(new Error("forbidden"), { code: 403 });
   if (!res.ok) throw new Error(await parseError(res));
   return res.json() as Promise<{ items: AppUser[]; total: number; limit: number; offset: number }>;
+}
+
+export async function apiDeleteUser(id: string) {
+  const res = await authFetch(`/api/v1/admin/users/${encodeURIComponent(id)}`, {
+    method: "DELETE",
+  });
+  if (res.status === 403) throw Object.assign(new Error("forbidden"), { code: 403 });
+  if (res.status === 404) throw Object.assign(new Error("not_found"), { code: 404 });
+  if (res.status === 409) throw Object.assign(new Error(await parseError(res)), { code: 409 });
+  if (!res.ok) throw new Error(await parseError(res));
+  return res.json() as Promise<{ id: string; deleted: boolean }>;
 }
 
 export async function apiGetUser(id: string) {
