@@ -95,7 +95,7 @@
     "emptyAudit": "Sin eventos de auditoría",
     "emptyTransfers": "Sin transfers recientes",
     "revokeDevice": "Revocar",
-    "deviceRevoked": "Dispositivo revocado — la app pedirá login completo",
+    "deviceRevoked": "Dispositivo revocado. La app corta la sesión al instante; el registro queda en el historial.",
     "cards": {
       "pciNote": "El panel no muestra PAN ni CVV. Esos datos solo los ve el cliente en su teléfono.",
       "empty": "Este cliente aún no tiene tarjetas.",
@@ -142,6 +142,8 @@
     "empty": "Sin dispositivos",
     "revoke": "Revocar",
     "revoked": "Revocado",
+    "revokeOk": "Revocado. El teléfono pierde la sesión ahora; el registro sigue en la lista.",
+    "revokeFailed": "No se pudo revocar",
     "forbidden": "Sin permiso"
   },
   "sessions": {

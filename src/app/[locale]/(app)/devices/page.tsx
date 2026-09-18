@@ -15,6 +15,7 @@ export default function DevicesPage() {
   const [items, setItems] = useState<Record<string, unknown>[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [msg, setMsg] = useState("");
   const can = hasPermission(getStaff(), "devices:read");
   const canRevoke = hasPermission(getStaff(), "devices:revoke");
 
@@ -48,6 +49,7 @@ export default function DevicesPage() {
           <p className="mt-1 text-sm text-[var(--text-muted)]">
             {total} {tc("total")}
           </p>
+          {msg ? <p className="mt-1 text-sm text-[var(--text-muted)]">{msg}</p> : null}
         </div>
         <div className="flex gap-2">
           <input
@@ -119,8 +121,13 @@ export default function DevicesPage() {
                         type="button"
                         className="text-xs text-[var(--danger)] hover:underline"
                         onClick={async () => {
-                          await apiRevokeDevice(String(r.id), "admin panel");
-                          await load();
+                          try {
+                            await apiRevokeDevice(String(r.id), "admin panel");
+                            setMsg(t("revokeOk"));
+                            await load();
+                          } catch {
+                            setMsg(t("revokeFailed"));
+                          }
                         }}
                       >
                         {t("revoke")}
