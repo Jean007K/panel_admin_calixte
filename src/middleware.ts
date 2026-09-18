@@ -15,9 +15,6 @@ function hasAdminSession(req: NextRequest): boolean {
 
 export default function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
-  if (pathname.startsWith("/api/")) {
-    return NextResponse.next();
-  }
 
   const locale = pathname.startsWith("/fr") ? "fr" : "es";
   const isLogin = /^\/(es|fr)\/login\/?$/.test(pathname);
@@ -41,5 +38,5 @@ export default function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/", "/(es|fr)/:path*", "/api/:path*"],
+  matcher: ["/", "/(es|fr)/:path*"],
 };

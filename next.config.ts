@@ -6,6 +6,15 @@ const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 const nextConfig: NextConfig = {
   output: "standalone",
   poweredByHeader: false,
+  async rewrites() {
+    const origin = (process.env.BFF_ORIGIN || "https://api.bcalixte.cc.cd").replace(/\/$/, "");
+    return [
+      {
+        source: "/api/:path*",
+        destination: `${origin}/api/:path*`,
+      },
+    ];
+  },
   async headers() {
     return [
       {
