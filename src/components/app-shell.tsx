@@ -40,6 +40,28 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   }, [locale, router]);
 
   useEffect(() => {
+    const idleMs = 15 * 60 * 1000;
+    let timer = 0;
+    const expire = async () => {
+      await apiLogout();
+      router.replace(`/${locale}/login`);
+    };
+    const bump = () => {
+      window.clearTimeout(timer);
+      timer = window.setTimeout(() => {
+        void expire();
+      }, idleMs);
+    };
+    const evts: Array<keyof WindowEventMap> = ["pointerdown", "keydown", "scroll"];
+    evts.forEach((e) => window.addEventListener(e, bump, { passive: true }));
+    bump();
+    return () => {
+      window.clearTimeout(timer);
+      evts.forEach((e) => window.removeEventListener(e, bump));
+    };
+  }, [locale, router]);
+
+  useEffect(() => {
     if (pathname.includes("/config")) setOpen((o) => ({ ...o, config: true }));
     if (
       pathname.includes("/links") ||

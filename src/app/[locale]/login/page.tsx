@@ -29,8 +29,8 @@ export default function LoginPage() {
     try {
       await apiLogin(email.trim(), password);
       router.replace(`/${locale}/users`);
-    } catch {
-      setError(t("error"));
+    } catch (err) {
+      setError(err instanceof Error && err.message ? err.message : t("error"));
     } finally {
       setBusy(false);
     }
@@ -74,7 +74,11 @@ export default function LoginPage() {
             <span className="text-sm font-medium">{t("email")}</span>
             <input
               type="email"
+              name="username"
               autoComplete="username"
+              autoCapitalize="none"
+              autoCorrect="off"
+              spellCheck={false}
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
