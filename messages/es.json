@@ -96,6 +96,14 @@
     "emptyTransfers": "Sin transfers recientes",
     "revokeDevice": "Revocar",
     "deviceRevoked": "Dispositivo revocado. La app corta la sesión al instante; el registro queda en el historial.",
+    "deviceIp": "Última IP",
+    "deviceFirstSeen": "Primera vez",
+    "deviceLastSeen": "Última vez",
+    "deviceRevokedAt": "Revocado el",
+    "deviceInstallation": "Installation ID",
+    "deviceSessions": "Historial de sesiones de este móvil",
+    "deviceAuthMethod": "Método",
+    "deviceStarted": "Inicio",
     "cards": {
       "pciNote": "El panel no muestra PAN ni CVV. Esos datos solo los ve el cliente en su teléfono.",
       "empty": "Este cliente aún no tiene tarjetas.",
@@ -144,7 +152,12 @@
     "revoked": "Revocado",
     "revokeOk": "Revocado. El teléfono pierde la sesión ahora; el registro sigue en la lista.",
     "revokeFailed": "No se pudo revocar",
-    "forbidden": "Sin permiso"
+    "forbidden": "Sin permiso",
+    "os": "Sistema",
+    "app": "App",
+    "ip": "IP",
+    "country": "País",
+    "firstSeen": "Primera vez"
   },
   "sessions": {
     "title": "Sesiones",

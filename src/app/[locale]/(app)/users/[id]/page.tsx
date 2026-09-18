@@ -342,70 +342,29 @@ export default function UserDetailPage() {
         ) : null}
 
         {tab === "devices" ? (
-          <div className="overflow-auto rounded border border-[var(--border)] bg-[var(--surface)]">
-            <table className="w-full min-w-[720px] text-left text-sm">
-              <thead className="border-b border-[var(--border)] bg-[var(--surface-2)] text-xs uppercase text-[var(--text-muted)]">
-                <tr>
-                  <th className="px-3 py-3">Platform</th>
-                  <th className="px-3 py-3">Model</th>
-                  <th className="px-3 py-3">App</th>
-                  <th className="px-3 py-3">{t("columns.status")}</th>
-                  <th className="px-3 py-3">Last seen</th>
-                  <th className="px-3 py-3">Installation</th>
-                  <th className="px-3 py-3" />
-                </tr>
-              </thead>
-              <tbody>
-                {dossier.devices.length === 0 ? (
-                  <tr>
-                    <td colSpan={7} className="px-3 py-8 text-[var(--text-muted)]">
-                      {t("emptyDevices")}
-                    </td>
-                  </tr>
-                ) : (
-                  dossier.devices.map((r) => (
-                    <tr key={str(r.id)} className="border-t border-[var(--border)]">
-                      <td className="px-3 py-2">{str(r.platform)}</td>
-                      <td className="px-3 py-2">{str(r.deviceModel)}</td>
-                      <td className="px-3 py-2">{str(r.appVersion)}</td>
-                      <td className="px-3 py-2">
-                        <StatusChip status={str(r.status)} />
-                      </td>
-                      <td className="px-3 py-2 text-[var(--text-muted)]">
-                        {fmtDate(r.lastSeenAt, locale)}
-                      </td>
-                      <td className="px-3 py-2 font-mono-data text-xs">
-                        {str(r.installationId)}
-                      </td>
-                      <td className="px-3 py-2 text-right">
-                        {canRevokeDevice && r.status === "active" ? (
-                          <button
-                            type="button"
-                            className="text-xs text-[var(--danger)] hover:underline"
-                            disabled={busy}
-                            onClick={async () => {
-                              setBusy(true);
-                              setMsg("");
-                              try {
-                                await apiRevokeDevice(str(r.id), "admin user dossier");
-                                await load();
-                                setMsg(t("deviceRevoked"));
-                              } catch {
-                                setMsg(t("noPermissionAction"));
-                              } finally {
-                                setBusy(false);
-                              }
-                            }}
-                          >
-                            {t("revokeDevice")}
-                          </button>
-                        ) : null}
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+          <div className="space-y-3">
+            {msg ? <p className="text-sm text-[var(--text-muted)]">{msg}</p> : null}
+            <DeviceDossierList
+              devices={dossier.devices}
+              sessions={[...(dossier.sessionsActive || []), ...(dossier.sessionsHistory || [])]}
+              locale={locale}
+              t={t}
+              busy={busy}
+              canRevoke={canRevokeDevice}
+              onRevoke={async (deviceId) => {
+                setBusy(true);
+                setMsg("");
+                try {
+                  await apiRevokeDevice(deviceId, "admin user dossier");
+                  await load();
+                  setMsg(t("deviceRevoked"));
+                } catch {
+                  setMsg(t("noPermissionAction"));
+                } finally {
+                  setBusy(false);
+                }
+              }}
+            />
           </div>
         ) : null}
 
@@ -531,6 +490,135 @@ function UserNotifications({ userId }: { userId: string }) {
           </tbody>
         </table>
       </div>
+    </div>
+  );
+}
+
+function DeviceDossierList({
+  devices,
+  sessions,
+  locale,
+  t,
+  busy,
+  canRevoke,
+  onRevoke,
+}: {
+  devices: Record<string, unknown>[];
+  sessions: Record<string, unknown>[];
+  locale: string;
+  t: (k: string) => string;
+  busy: boolean;
+  canRevoke: boolean;
+  onRevoke: (id: string) => Promise<void>;
+}) {
+  if (!devices.length) {
+    return <p className="text-sm text-[var(--text-muted)]">{t("emptyDevices")}</p>;
+  }
+  return (
+    <div className="space-y-4">
+      {devices.map((r) => {
+        const id = str(r.id);
+        const model = str(r.deviceModel) !== "—" ? str(r.deviceModel) : str(r.platform);
+        const os = str(r.osVersion);
+        const app = str(r.appVersion);
+        const ip = str(r.lastIp);
+        const country = str(r.lastCountry);
+        const related = sessions.filter((s) => str(s.deviceId) === id);
+        return (
+          <article
+            key={id}
+            className="rounded border border-[var(--border)] bg-[var(--surface)] p-4"
+          >
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div className="min-w-0">
+                <div className="flex flex-wrap items-center gap-2">
+                  <h3 className="text-base font-medium">{model}</h3>
+                  <StatusChip status={str(r.status)} />
+                </div>
+                <p className="mt-1 text-sm text-[var(--text-muted)]">
+                  {[
+                    os !== "—" ? os : null,
+                    app !== "—" ? `app ${app}` : null,
+                    str(r.platform) !== "—" ? str(r.platform) : null,
+                  ]
+                    .filter(Boolean)
+                    .join(" · ")}
+                </p>
+              </div>
+              {canRevoke && r.status === "active" ? (
+                <button
+                  type="button"
+                  className="text-xs text-[var(--danger)] hover:underline"
+                  disabled={busy}
+                  onClick={() => void onRevoke(id)}
+                >
+                  {t("revokeDevice")}
+                </button>
+              ) : null}
+            </div>
+            <dl className="mt-3 grid gap-3 text-sm sm:grid-cols-2 lg:grid-cols-3">
+              <div>
+                <dt className="text-xs text-[var(--text-muted)]">{t("deviceIp")}</dt>
+                <dd className="mt-0.5 font-mono-data text-xs">
+                  {ip}
+                  {country !== "—" ? ` · ${country}` : ""}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-xs text-[var(--text-muted)]">{t("deviceFirstSeen")}</dt>
+                <dd className="mt-0.5">{fmtDate(r.firstSeenAt, locale)}</dd>
+              </div>
+              <div>
+                <dt className="text-xs text-[var(--text-muted)]">{t("deviceLastSeen")}</dt>
+                <dd className="mt-0.5">{fmtDate(r.lastSeenAt, locale)}</dd>
+              </div>
+              {r.revokedAt ? (
+                <div>
+                  <dt className="text-xs text-[var(--text-muted)]">{t("deviceRevokedAt")}</dt>
+                  <dd className="mt-0.5">{fmtDate(r.revokedAt, locale)}</dd>
+                </div>
+              ) : null}
+              <div className="sm:col-span-2">
+                <dt className="text-xs text-[var(--text-muted)]">{t("deviceInstallation")}</dt>
+                <dd className="mt-0.5 break-all font-mono-data text-xs">{str(r.installationId)}</dd>
+              </div>
+            </dl>
+            {related.length > 0 ? (
+              <div className="mt-4 border-t border-[var(--border)] pt-3">
+                <h4 className="mb-2 text-xs font-semibold uppercase tracking-wide text-[var(--text-muted)]">
+                  {t("deviceSessions")}
+                </h4>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs">
+                    <thead className="text-[var(--text-muted)]">
+                      <tr>
+                        <th className="py-1 pr-3 font-medium">{t("columns.status")}</th>
+                        <th className="py-1 pr-3 font-medium">{t("deviceAuthMethod")}</th>
+                        <th className="py-1 pr-3 font-medium">{t("deviceIp")}</th>
+                        <th className="py-1 pr-3 font-medium">{t("deviceStarted")}</th>
+                        <th className="py-1 font-medium">{t("deviceLastSeen")}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {related.map((s) => (
+                        <tr key={str(s.id)} className="border-t border-[var(--border)]">
+                          <td className="py-1.5 pr-3">
+                            <StatusChip status={str(s.status)} />
+                          </td>
+                          <td className="py-1.5 pr-3">{str(s.authMethod)}</td>
+                          <td className="py-1.5 pr-3 font-mono-data">{str(s.lastIp)}</td>
+                          <td className="py-1.5 pr-3">{fmtDate(s.startedAt, locale)}</td>
+                          <td className="py-1.5">{fmtDate(s.lastSeenAt, locale)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            ) : null}
+          </article>
+        );
+      })}
     </div>
   );
 }

@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useTranslations } from "next-intl";
+import Link from "next/link";
+import { useLocale, useTranslations } from "next-intl";
 import { apiListDevices, apiRevokeDevice, getStaff, hasPermission } from "@/lib/api";
 import { PAGE_SIZE, PaginationBar } from "@/components/pagination-bar";
 import { StatusChip } from "@/components/status-chip";
@@ -9,6 +10,7 @@ import { StatusChip } from "@/components/status-chip";
 export default function DevicesPage() {
   const t = useTranslations("devices");
   const tc = useTranslations("common");
+  const locale = useLocale();
   const [q, setQ] = useState("");
   const [status, setStatus] = useState("");
   const [offset, setOffset] = useState(0);
@@ -77,44 +79,70 @@ export default function DevicesPage() {
         </div>
       </div>
       <div className="overflow-auto rounded border border-[var(--border)] bg-[var(--surface)]">
-        <table className="w-full min-w-[980px] text-left text-sm">
+        <table className="w-full min-w-[1280px] text-left text-sm">
           <thead className="border-b border-[var(--border)] bg-[var(--surface-2)] text-xs uppercase text-[var(--text-muted)]">
             <tr>
               <th className="px-3 py-3">Phone</th>
-              <th className="px-3 py-3">Platform</th>
               <th className="px-3 py-3">Model</th>
-              <th className="px-3 py-3">Installation</th>
+              <th className="px-3 py-3">{t("os")}</th>
+              <th className="px-3 py-3">{t("app")}</th>
+              <th className="px-3 py-3">{t("ip")}</th>
+              <th className="px-3 py-3">{t("country")}</th>
               <th className="px-3 py-3">Status</th>
+              <th className="px-3 py-3">{t("firstSeen")}</th>
               <th className="px-3 py-3">Last seen</th>
+              <th className="px-3 py-3">Installation</th>
               <th className="px-3 py-3" />
             </tr>
           </thead>
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={7} className="px-3 py-8 text-[var(--text-muted)]">
+                <td colSpan={11} className="px-3 py-8 text-[var(--text-muted)]">
                   {tc("loading")}
                 </td>
               </tr>
             ) : items.length === 0 ? (
               <tr>
-                <td colSpan={7} className="px-3 py-8 text-[var(--text-muted)]">
+                <td colSpan={11} className="px-3 py-8 text-[var(--text-muted)]">
                   {t("empty")}
                 </td>
               </tr>
             ) : (
               items.map((r) => (
                 <tr key={String(r.id)} className="border-t border-[var(--border)]">
-                  <td className="px-3 py-2 font-mono-data text-xs">{String(r.phoneE164)}</td>
-                  <td className="px-3 py-2">{String(r.platform)}</td>
-                  <td className="px-3 py-2">{String(r.deviceModel || "—")}</td>
-                  <td className="px-3 py-2 font-mono-data text-xs">{String(r.installationId)}</td>
+                  <td className="px-3 py-2 font-mono-data text-xs">
+                    {r.userId ? (
+                      <Link
+                        href={`/${locale}/users/${encodeURIComponent(String(r.userId))}`}
+                        className="text-[var(--accent)] hover:underline"
+                      >
+                        {String(r.phoneE164)}
+                      </Link>
+                    ) : (
+                      String(r.phoneE164)
+                    )}
+                  </td>
+                  <td className="px-3 py-2">
+                    {String(r.deviceModel || "—")}
+                    <span className="mt-0.5 block text-[11px] text-[var(--text-muted)]">
+                      {String(r.platform || "")}
+                    </span>
+                  </td>
+                  <td className="px-3 py-2">{String(r.osVersion || "—")}</td>
+                  <td className="px-3 py-2">{String(r.appVersion || "—")}</td>
+                  <td className="px-3 py-2 font-mono-data text-xs">{String(r.lastIp || "—")}</td>
+                  <td className="px-3 py-2">{String(r.lastCountry || "—")}</td>
                   <td className="px-3 py-2">
                     <StatusChip status={String(r.status)} />
                   </td>
                   <td className="px-3 py-2 text-[var(--text-muted)]">
+                    {r.firstSeenAt ? new Date(String(r.firstSeenAt)).toLocaleString() : "—"}
+                  </td>
+                  <td className="px-3 py-2 text-[var(--text-muted)]">
                     {r.lastSeenAt ? new Date(String(r.lastSeenAt)).toLocaleString() : "—"}
                   </td>
+                  <td className="px-3 py-2 font-mono-data text-xs">{String(r.installationId)}</td>
                   <td className="px-3 py-2 text-right">
                     {canRevoke && r.status === "active" ? (
                       <button

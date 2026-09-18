@@ -96,6 +96,14 @@
     "emptyTransfers": "Aucun transfer récent",
     "revokeDevice": "Révoquer",
     "deviceRevoked": "Appareil révoqué. L'app coupe la session tout de suite ; l'historique reste visible.",
+    "deviceIp": "Dernière IP",
+    "deviceFirstSeen": "Première vue",
+    "deviceLastSeen": "Dernière vue",
+    "deviceRevokedAt": "Révoqué le",
+    "deviceInstallation": "Installation ID",
+    "deviceSessions": "Historique des sessions de cet appareil",
+    "deviceAuthMethod": "Méthode",
+    "deviceStarted": "Début",
     "cards": {
       "pciNote": "Le panneau n'affiche ni PAN ni CVV. Ces données ne sont visibles que sur le téléphone du client.",
       "empty": "Ce client n'a pas encore de cartes.",
@@ -144,7 +152,12 @@
     "revoked": "Révoqué",
     "revokeOk": "Révoqué. Le téléphone perd la session tout de suite ; l'appareil reste dans la liste.",
     "revokeFailed": "Impossible de révoquer",
-    "forbidden": "Pas d'autorisation"
+    "forbidden": "Pas d'autorisation",
+    "os": "Système",
+    "app": "App",
+    "ip": "IP",
+    "country": "Pays",
+    "firstSeen": "Première vue"
   },
   "sessions": {
     "title": "Sessions",
