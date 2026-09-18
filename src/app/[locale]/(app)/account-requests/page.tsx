@@ -2,13 +2,15 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { apiListAccountRequests, getStaff, hasPermission } from "@/lib/api";
 import { PaginationBar } from "@/components/pagination-bar";
 import { StatusChip } from "@/components/status-chip";
 
 export default function AccountRequestsPage() {
   const locale = useLocale();
+  const t = useTranslations("accountRequests");
+  const tc = useTranslations("common");
   const can = hasPermission(getStaff(), "users:read");
   const [status, setStatus] = useState("pending");
   const [offset, setOffset] = useState(0);
@@ -33,16 +35,14 @@ export default function AccountRequestsPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status, offset, can]);
 
-  if (!can) return <p className="text-sm text-[var(--danger)]">Sin permiso</p>;
+  if (!can) return <p className="text-sm text-[var(--danger)]">{t("forbidden")}</p>;
 
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="font-display text-2xl">Cuentas adicionales</h1>
-          <p className="mt-1 text-sm text-[var(--text-muted)]">
-            Solicitudes desde la app. Un agente las revisa; no se abre la cuenta sola.
-          </p>
+          <h1 className="font-display text-2xl">{t("title")}</h1>
+          <p className="mt-1 text-sm text-[var(--text-muted)]">{t("subtitle")}</p>
         </div>
         <select
           value={status}
@@ -52,7 +52,7 @@ export default function AccountRequestsPage() {
           }}
           className="rounded border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm"
         >
-          <option value="">Todas</option>
+          <option value="">{t("all")}</option>
           <option value="pending">pending</option>
           <option value="approved">approved</option>
           <option value="rejected">rejected</option>
@@ -62,24 +62,24 @@ export default function AccountRequestsPage() {
         <table className="w-full min-w-[720px] text-left text-sm">
           <thead className="bg-[var(--surface-2)] text-xs uppercase text-[var(--text-muted)]">
             <tr>
-              <th className="px-3 py-2">Cliente</th>
-              <th className="px-3 py-2">Producto</th>
-              <th className="px-3 py-2">Nota</th>
-              <th className="px-3 py-2">Estado</th>
-              <th className="px-3 py-2">Fecha</th>
+              <th className="px-3 py-2">{t("client")}</th>
+              <th className="px-3 py-2">{t("product")}</th>
+              <th className="px-3 py-2">{t("note")}</th>
+              <th className="px-3 py-2">{tc("status")}</th>
+              <th className="px-3 py-2">{t("date")}</th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
               <tr>
                 <td className="px-3 py-6 text-[var(--text-muted)]" colSpan={5}>
-                  Cargando…
+                  {tc("loading")}
                 </td>
               </tr>
             ) : items.length === 0 ? (
               <tr>
                 <td className="px-3 py-6 text-[var(--text-muted)]" colSpan={5}>
-                  Sin solicitudes
+                  {t("empty")}
                 </td>
               </tr>
             ) : (

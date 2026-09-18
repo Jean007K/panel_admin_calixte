@@ -87,6 +87,7 @@ export default function ConfigFlagsPage() {
                         type="button"
                         className="rounded bg-[var(--accent)] px-3 py-1 text-xs font-semibold text-[var(--accent-fg)]"
                         onClick={async () => {
+                          if (!window.confirm(t("saveConfirm"))) return;
                           await apiUpsertFlag(f.key, f.enabled, f.value || {});
                           setMsg(t("saved"));
                           await load();

@@ -3,7 +3,7 @@
 import { useLocale, useTranslations } from "next-intl";
 import { usePathname, useRouter } from "next/navigation";
 import { useTheme } from "./theme-provider";
-import { apiLogout, getStaff, hasPermission, type Staff } from "@/lib/api";
+import { apiLogout, apiMe, hasPermission, type Staff } from "@/lib/api";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 
@@ -25,12 +25,18 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState<Record<string, boolean>>({ config: true, more: false });
 
   useEffect(() => {
-    const s = getStaff();
-    if (!s) {
-      router.replace(`/${locale}/login`);
-      return;
-    }
-    setStaff(s);
+    let live = true;
+    (async () => {
+      try {
+        const s = await apiMe();
+        if (live) setStaff(s);
+      } catch {
+        if (live) router.replace(`/${locale}/login`);
+      }
+    })();
+    return () => {
+      live = false;
+    };
   }, [locale, router]);
 
   useEffect(() => {

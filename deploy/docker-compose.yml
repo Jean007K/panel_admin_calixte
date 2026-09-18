@@ -3,10 +3,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      args:
-        NEXT_PUBLIC_API_BASE_URL: https://api.bcalixte.cc.cd
     ports:
       - "3000:3000"
     environment:
       - NODE_ENV=production
       - PORT=3000
+      - BFF_ORIGIN=https://api.bcalixte.cc.cd

@@ -58,6 +58,12 @@ export default function ConfigRemotePage() {
   async function onSave(e: FormEvent) {
     e.preventDefault();
     if (!canWrite) return;
+    if (kill) {
+      const typed = window.prompt(t("killConfirmPrompt"));
+      if (typed !== t("killConfirmWord")) return;
+    } else if (!window.confirm(t("saveConfirm"))) {
+      return;
+    }
     setBusy(true);
     setMsg("");
     try {

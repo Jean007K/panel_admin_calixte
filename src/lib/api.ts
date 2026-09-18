@@ -1,6 +1,4 @@
-export const API_BASE =
-  process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, "") ||
-  "https://api.bcalixte.cc.cd";
+export const API_BASE = "";
 
 export type Staff = {
   id: string;
@@ -118,32 +116,30 @@ const ACCESS_KEY = "calixte_admin_access";
 const REFRESH_KEY = "calixte_admin_refresh";
 const STAFF_KEY = "calixte_admin_staff";
 
-export function getAccessToken(): string | null {
-  if (typeof window === "undefined") return null;
-  return localStorage.getItem(ACCESS_KEY);
-}
+let staffCache: Staff | null = null;
 
-export function getStaff(): Staff | null {
-  if (typeof window === "undefined") return null;
-  const raw = localStorage.getItem(STAFF_KEY);
-  if (!raw) return null;
-  try {
-    return JSON.parse(raw) as Staff;
-  } catch {
-    return null;
-  }
-}
-
-export function setSession(access: string, refresh: string, staff: Staff) {
-  localStorage.setItem(ACCESS_KEY, access);
-  localStorage.setItem(REFRESH_KEY, refresh);
-  localStorage.setItem(STAFF_KEY, JSON.stringify(staff));
-}
-
-export function clearSession() {
+function wipeLegacyStorage() {
+  if (typeof window === "undefined") return;
   localStorage.removeItem(ACCESS_KEY);
   localStorage.removeItem(REFRESH_KEY);
   localStorage.removeItem(STAFF_KEY);
+}
+
+export function getStaff(): Staff | null {
+  return staffCache;
+}
+
+export function setStaffCache(staff: Staff | null) {
+  staffCache = staff;
+}
+
+export function setSession(_access: string, _refresh: string, staff: Staff) {
+  staffCache = staff;
+}
+
+export function clearSession() {
+  staffCache = null;
+  wipeLegacyStorage();
 }
 
 export function hasPermission(staff: Staff | null, code: string): boolean {
@@ -164,64 +160,64 @@ async function parseError(res: Response): Promise<string> {
 }
 
 export async function apiLogin(email: string, password: string) {
+  wipeLegacyStorage();
   const res = await fetch(`${API_BASE}/api/v1/admin/auth/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    cache: "no-store",
     body: JSON.stringify({ email, password }),
   });
   if (!res.ok) throw new Error(await parseError(res));
   const data = await res.json();
-  setSession(data.accessToken, data.refreshToken, data.staff);
+  setStaffCache(data.staff);
   return data.staff as Staff;
 }
 
 export async function apiLogout() {
-  const refresh = localStorage.getItem(REFRESH_KEY);
-  const access = getAccessToken();
   try {
-    if (access) {
-      await fetch(`${API_BASE}/api/v1/admin/auth/logout`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${access}`,
-        },
-        body: JSON.stringify({ refreshToken: refresh }),
-      });
-    }
+    await fetch(`${API_BASE}/api/v1/admin/auth/logout`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      cache: "no-store",
+      body: "{}",
+    });
   } finally {
     clearSession();
   }
 }
 
+export async function apiMe() {
+  const res = await authFetch("/api/v1/admin/me");
+  if (!res.ok) throw Object.assign(new Error("unauthorized"), { code: res.status });
+  const staff = (await res.json()) as Staff;
+  setStaffCache(staff);
+  return staff;
+}
+
 async function authFetch(path: string, init: RequestInit = {}) {
-  const access = getAccessToken();
-  if (!access) throw new Error("unauthorized");
   const headers = new Headers(init.headers);
-  headers.set("Authorization", `Bearer ${access}`);
   if (init.body && !headers.has("Content-Type")) {
     headers.set("Content-Type", "application/json");
   }
-  let res = await fetch(`${API_BASE}${path}`, { ...init, headers });
-  if (res.status === 401) {
-    const refresh = localStorage.getItem(REFRESH_KEY);
-    if (!refresh) {
-      clearSession();
-      throw new Error("unauthorized");
-    }
+  const opts: RequestInit = { ...init, headers, credentials: "include", cache: "no-store" };
+  let res = await fetch(`${API_BASE}${path}`, opts);
+  if (res.status === 401 && !path.includes("/admin/auth/")) {
     const r = await fetch(`${API_BASE}/api/v1/admin/auth/refresh`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ refreshToken: refresh }),
+      credentials: "include",
+      cache: "no-store",
+      body: "{}",
     });
     if (!r.ok) {
       clearSession();
       throw new Error("unauthorized");
     }
-    const data = await r.json();
-    setSession(data.accessToken, data.refreshToken, data.staff);
-    headers.set("Authorization", `Bearer ${data.accessToken}`);
-    res = await fetch(`${API_BASE}${path}`, { ...init, headers });
+    const data = await r.json().catch(() => ({}));
+    if (data.staff) setStaffCache(data.staff as Staff);
+    res = await fetch(`${API_BASE}${path}`, opts);
   }
   return res;
 }
@@ -367,12 +363,11 @@ export async function apiUpsertFlag(key: string, enabled: boolean, value: unknow
 export const apiListTransfers = (q: string, status: string, offset = 0) =>
   listResource<Record<string, unknown>>("/api/v1/admin/transfers", q, status, undefined, offset);
 
-export async function apiSystemProbe() {
-  const [live, ready] = await Promise.all([
-    fetch(`${API_BASE}/healthz`).then((r) => r.json()).catch((e) => ({ error: String(e) })),
-    fetch(`${API_BASE}/readyz`).then(async (r) => ({ statusCode: r.status, ...(await r.json()) })).catch((e) => ({ error: String(e) })),
-  ]);
-  return { live, ready };
+export async function apiSystemHealth() {
+  const res = await authFetch(`/api/v1/admin/system/health`);
+  if (res.status === 403) throw Object.assign(new Error("forbidden"), { code: 403 });
+  if (!res.ok) throw new Error(await parseError(res));
+  return res.json() as Promise<Record<string, unknown>>;
 }
 
 export async function apiListPromosAdmin() {

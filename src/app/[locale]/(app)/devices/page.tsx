@@ -149,6 +149,7 @@ export default function DevicesPage() {
                         type="button"
                         className="text-xs text-[var(--danger)] hover:underline"
                         onClick={async () => {
+                          if (!window.confirm(t("revokeConfirm"))) return;
                           try {
                             await apiRevokeDevice(String(r.id), "admin panel");
                             setMsg(t("revokeOk"));

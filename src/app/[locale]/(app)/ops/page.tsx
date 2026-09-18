@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
-import { apiListTransfers, apiSystemProbe, getStaff, hasPermission } from "@/lib/api";
+import { apiListTransfers, apiSystemHealth, getStaff, hasPermission } from "@/lib/api";
 import { PAGE_SIZE, PaginationBar } from "@/components/pagination-bar";
 import { StatusChip } from "@/components/status-chip";
 
@@ -14,21 +14,36 @@ export default function OpsPage() {
   const [offset, setOffset] = useState(0);
   const [items, setItems] = useState<Record<string, unknown>[]>([]);
   const [total, setTotal] = useState(0);
-  const [health, setHealth] = useState<unknown>(null);
+  const [health, setHealth] = useState<Record<string, unknown> | null>(null);
   const [loading, setLoading] = useState(true);
+  const [healthBusy, setHealthBusy] = useState(false);
   const can = hasPermission(getStaff(), "ops:read");
+
+  const loadHealth = async () => {
+    setHealthBusy(true);
+    try {
+      setHealth(await apiSystemHealth());
+    } finally {
+      setHealthBusy(false);
+    }
+  };
 
   const load = async () => {
     setLoading(true);
     try {
-      const [jobs, probe] = await Promise.all([apiListTransfers(q, status, offset), apiSystemProbe()]);
+      const jobs = await apiListTransfers(q, status, offset);
       setItems(jobs.items || []);
       setTotal(jobs.total || 0);
-      setHealth(probe);
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (!can) return;
+    void loadHealth();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [can]);
 
   useEffect(() => {
     if (!can) return;
@@ -85,10 +100,29 @@ export default function OpsPage() {
       </div>
 
       <section className="rounded border border-[var(--border)] bg-[var(--surface)] p-4">
-        <h2 className="text-sm font-semibold">{t("health")}</h2>
-        <pre className="mt-3 overflow-auto rounded bg-[var(--bg)] p-3 font-mono-data text-xs text-[var(--text-muted)]">
-          {health ? JSON.stringify(health, null, 2) : tc("loading")}
-        </pre>
+        <div className="flex items-center justify-between gap-2">
+          <h2 className="text-sm font-semibold">{t("health")}</h2>
+          <button
+            type="button"
+            onClick={() => void loadHealth()}
+            className="text-xs text-[var(--text-muted)] hover:underline"
+            disabled={healthBusy}
+          >
+            {t("refresh")}
+          </button>
+        </div>
+        {health ? (
+          <dl className="mt-3 grid grid-cols-2 gap-2 text-sm sm:grid-cols-4">
+            {["live", "redis", "postgres", "fineract"].map((k) => (
+              <div key={k}>
+                <dt className="text-xs uppercase text-[var(--text-muted)]">{k}</dt>
+                <dd className="mt-0.5">{health[k] === false ? t("healthDown") : t("healthUp")}</dd>
+              </div>
+            ))}
+          </dl>
+        ) : (
+          <p className="mt-3 text-sm text-[var(--text-muted)]">{tc("loading")}</p>
+        )}
       </section>
 
       <div className="overflow-auto rounded border border-[var(--border)] bg-[var(--surface)]">

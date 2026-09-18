@@ -104,6 +104,7 @@
     "deviceSessions": "Historique des sessions de cet appareil",
     "deviceAuthMethod": "Méthode",
     "deviceStarted": "Début",
+    "revokeDeviceConfirm": "Révoquer cet appareil ? Le client perd la session tout de suite.",
     "cards": {
       "pciNote": "Le panneau n'affiche ni PAN ni CVV. Ces données ne sont visibles que sur le téléphone du client.",
       "empty": "Ce client n'a pas encore de cartes.",
@@ -157,7 +158,8 @@
     "app": "App",
     "ip": "IP",
     "country": "Pays",
-    "firstSeen": "Première vue"
+    "firstSeen": "Première vue",
+    "revokeConfirm": "Révoquer cet appareil ? Le client perd la session tout de suite."
   },
   "sessions": {
     "title": "Sessions",
@@ -171,7 +173,8 @@
     "save": "Enregistrer",
     "enabled": "Actif",
     "forbidden": "Pas d'autorisation",
-    "saved": "Enregistré"
+    "saved": "Enregistré",
+    "saveConfirm": "Enregistrer ce flag ? Cela peut affecter tous les clients."
   },
   "config": {
     "ads": {
@@ -272,7 +275,10 @@
       "minVersion": "Version minimale",
       "storeUrl": "URL store",
       "message": "Message",
-      "blockedVersions": "Versions bloquées (une par ligne)"
+      "blockedVersions": "Versions bloquées (une par ligne)",
+      "saveConfirm": "Enregistrer la mise à jour distante ?",
+      "killConfirmPrompt": "Cela coupe l'app pour tous. Tapez COUPER pour confirmer.",
+      "killConfirmWord": "COUPER"
     }
   },
   "audit": {
@@ -320,7 +326,41 @@
     "search": "Rechercher job, user, correlation…",
     "empty": "Aucun job",
     "forbidden": "Pas d'autorisation",
-    "refresh": "Actualiser"
+    "refresh": "Actualiser",
+    "healthUp": "OK",
+    "healthDown": "Hors service"
+  },
+  "support": {
+    "title": "Support",
+    "subtitle": "Clients qui ont demandé de l'aide depuis l'app",
+    "forbidden": "Pas d'autorisation",
+    "empty": "Aucune demande",
+    "client": "Client",
+    "message": "Message",
+    "date": "Date",
+    "markSeen": "Marquer vu",
+    "close": "Fermer",
+    "all": "Tous"
+  },
+  "accountRequests": {
+    "title": "Comptes supplémentaires",
+    "subtitle": "Demandes depuis l'app. Un agent les examine ; le compte ne s'ouvre pas tout seul.",
+    "forbidden": "Pas d'autorisation",
+    "empty": "Aucune demande",
+    "client": "Client",
+    "product": "Produit",
+    "note": "Note",
+    "date": "Date",
+    "all": "Toutes"
+  },
+  "notifications": {
+    "loading": "Chargement…",
+    "empty": "Aucune notification",
+    "total": "{count} au total",
+    "type": "Type",
+    "title": "Titre",
+    "body": "Corps",
+    "date": "Date"
   },
   "common": {
     "loading": "Chargement…",

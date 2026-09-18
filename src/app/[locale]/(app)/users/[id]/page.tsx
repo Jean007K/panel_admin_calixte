@@ -352,6 +352,7 @@ export default function UserDetailPage() {
               busy={busy}
               canRevoke={canRevokeDevice}
               onRevoke={async (deviceId) => {
+                if (!window.confirm(t("revokeDeviceConfirm"))) return;
                 setBusy(true);
                 setMsg("");
                 try {
@@ -441,6 +442,7 @@ export default function UserDetailPage() {
 }
 
 function UserNotifications({ userId }: { userId: string }) {
+  const t = useTranslations("notifications");
   const [items, setItems] = useState<Record<string, unknown>[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -462,20 +464,20 @@ function UserNotifications({ userId }: { userId: string }) {
     };
   }, [userId]);
 
-  if (loading) return <p className="text-sm text-[var(--text-muted)]">Cargando…</p>;
-  if (!items.length) return <p className="text-sm text-[var(--text-muted)]">Sin notificaciones</p>;
+  if (loading) return <p className="text-sm text-[var(--text-muted)]">{t("loading")}</p>;
+  if (!items.length) return <p className="text-sm text-[var(--text-muted)]">{t("empty")}</p>;
 
   return (
     <div className="space-y-2">
-      <p className="text-xs text-[var(--text-muted)]">{total} en total</p>
+      <p className="text-xs text-[var(--text-muted)]">{t("total", { count: total })}</p>
       <div className="overflow-x-auto border border-[var(--border)]">
         <table className="w-full text-left text-sm">
           <thead className="border-b border-[var(--border)] bg-[var(--surface-2)] text-xs uppercase text-[var(--text-muted)]">
             <tr>
-              <th className="px-3 py-2">Tipo</th>
-              <th className="px-3 py-2">Título</th>
-              <th className="px-3 py-2">Cuerpo</th>
-              <th className="px-3 py-2">Fecha</th>
+              <th className="px-3 py-2">{t("type")}</th>
+              <th className="px-3 py-2">{t("title")}</th>
+              <th className="px-3 py-2">{t("body")}</th>
+              <th className="px-3 py-2">{t("date")}</th>
             </tr>
           </thead>
           <tbody>

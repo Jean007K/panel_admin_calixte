@@ -104,6 +104,7 @@
     "deviceSessions": "Historial de sesiones de este móvil",
     "deviceAuthMethod": "Método",
     "deviceStarted": "Inicio",
+    "revokeDeviceConfirm": "¿Revocar este móvil? El cliente pierde la sesión ahora.",
     "cards": {
       "pciNote": "El panel no muestra PAN ni CVV. Esos datos solo los ve el cliente en su teléfono.",
       "empty": "Este cliente aún no tiene tarjetas.",
@@ -157,7 +158,8 @@
     "app": "App",
     "ip": "IP",
     "country": "País",
-    "firstSeen": "Primera vez"
+    "firstSeen": "Primera vez",
+    "revokeConfirm": "¿Revocar este móvil? El cliente pierde la sesión ahora."
   },
   "sessions": {
     "title": "Sesiones",
@@ -171,7 +173,8 @@
     "save": "Guardar",
     "enabled": "Activo",
     "forbidden": "Sin permiso",
-    "saved": "Guardado"
+    "saved": "Guardado",
+    "saveConfirm": "¿Guardar este flag? Puede afectar a todos los clientes."
   },
   "config": {
     "ads": {
@@ -272,7 +275,10 @@
       "minVersion": "Versión mínima",
       "storeUrl": "URL tienda",
       "message": "Mensaje",
-      "blockedVersions": "Versiones bloqueadas (una por línea)"
+      "blockedVersions": "Versiones bloqueadas (una por línea)",
+      "saveConfirm": "¿Guardar actualización remota?",
+      "killConfirmPrompt": "Esto apaga la app para todos. Escribe APAGAR para confirmar.",
+      "killConfirmWord": "APAGAR"
     }
   },
   "audit": {
@@ -320,7 +326,41 @@
     "search": "Buscar job, user, correlation…",
     "empty": "Sin jobs en cola",
     "forbidden": "Sin permiso",
-    "refresh": "Actualizar"
+    "refresh": "Actualizar",
+    "healthUp": "OK",
+    "healthDown": "Caído"
+  },
+  "support": {
+    "title": "Soporte",
+    "subtitle": "Clientes que pidieron asistencia desde la app",
+    "forbidden": "Sin permiso",
+    "empty": "Sin solicitudes",
+    "client": "Cliente",
+    "message": "Mensaje",
+    "date": "Fecha",
+    "markSeen": "Marcar visto",
+    "close": "Cerrar",
+    "all": "Todos"
+  },
+  "accountRequests": {
+    "title": "Cuentas adicionales",
+    "subtitle": "Solicitudes desde la app. Un agente las revisa; no se abre la cuenta sola.",
+    "forbidden": "Sin permiso",
+    "empty": "Sin solicitudes",
+    "client": "Cliente",
+    "product": "Producto",
+    "note": "Nota",
+    "date": "Fecha",
+    "all": "Todas"
+  },
+  "notifications": {
+    "loading": "Cargando…",
+    "empty": "Sin notificaciones",
+    "total": "{count} en total",
+    "type": "Tipo",
+    "title": "Título",
+    "body": "Cuerpo",
+    "date": "Fecha"
   },
   "common": {
     "loading": "Cargando…",
