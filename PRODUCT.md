@@ -35,7 +35,7 @@ Backoffice de la **capa aplicación Calixte** (BFF), no un segundo Mifos. Contab
 - El panel **nunca** llama a Fineract directamente.
 - No reutilizar tokens de sesión móvil.
 - BFF es la autoridad de permisos; la UI solo oculta, no autoriza.
-- Endpoint legado `PATCH /api/v1/internal/users/:id/status` (token interno) evoluciona a `/api/v1/admin/users/:id/status` con permiso `users:update_status`.
+- Cambio de status de usuario app: solo `PATCH /api/v1/admin/users/:id/status` con permiso `users:update_status`. El stub `PATCH /internal/users/:id/status` fue retirado (2026-09-14).
 - Roles semilla: `super_admin`, `ops`, `support_l1`, `executive`, `manager`, `area_head`.
 - Repo: https://github.com/Jean007K/panel_admin_calixte
 - Hecho: devices, flags, audit, ops, support, account-requests. Staff MFA del panel = post soft launch.
@@ -48,7 +48,7 @@ Backoffice de la **capa aplicación Calixte** (BFF), no un segundo Mifos. Contab
 
 ## Evidence on Hand
 
-- Stub BFF status: `bakend_calixte` `AdminUpdateStatus`
+- Cambio de status: `PATCH /api/v1/admin/users/:id/status` (permiso `users:update_status`)
 - Schema `app_users` (status lifecycle) en Postgres BFF
 - Design system móvil Calixte en `appcalixte` (referencia de marca, no copiar 1:1 a admin)
 - No fabricar testimonios, métricas de clientes ni claims de ledger

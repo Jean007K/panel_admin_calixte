@@ -8,8 +8,8 @@ Backoffice ops de Banco Calixte (capa BFF). **No** sustituye Mifos.
 | Repo | https://github.com/Jean007K/panel_admin_calixte |
 | API | mismo origen `/api/v1` → BFF (`BFF_ORIGIN`, default `https://api.bcalixte.cc.cd`) |
 | Stack | Next.js 15 · TypeScript · next-intl (es/fr) · tema claro/oscuro |
-| Fase | **Desarrollo** — ficha 360 + Config + productos OK; MFA/staff UI = post soft launch |
-| Soft launch | Gate **P9** del BFF PATH (20–50 usuarios) — panel solo soporte ops, sin redesign en ese gate |
+| Fase | Desarrollo — cookies/CSP/lockout staff **hechos**. MFA staff extra = **no pista**. Ver BFF [`docs/ESTADO.md`](../bakend_calixte/docs/ESTADO.md) |
+| Soft launch | No es cola de panel. P9 BFF solo si el dueño lo nombra |
 | Diseño | `PRODUCT.md` · `DESIGN.md` |
 
 ## Arranque local

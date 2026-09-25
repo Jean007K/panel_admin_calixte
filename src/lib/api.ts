@@ -617,3 +617,88 @@ export async function apiListUserNotifications(userId: string, offset = 0) {
   return res.json() as Promise<{ items: Record<string, unknown>[]; total: number }>;
 }
 
+export type AgentDeskView = {
+  enabled: boolean;
+  kind?: string;
+  floatSavingsId?: string;
+  floatAvailableMinor: number;
+  lowFloat: boolean;
+  currency: string;
+  feeBps: number;
+  agentShareBps: number;
+  recent: Array<{
+    id: string;
+    direction: string;
+    amountMinor: number;
+    feeMinor: number;
+    status: string;
+    createdAt: string;
+    note?: string;
+  }>;
+};
+
+export async function apiGetAgent(userId: string) {
+  const res = await authFetch(`/api/v1/admin/users/${encodeURIComponent(userId)}/agent`);
+  if (res.status === 403) throw Object.assign(new Error("forbidden"), { code: 403 });
+  if (!res.ok) throw new Error(await parseError(res));
+  return res.json() as Promise<AgentDeskView>;
+}
+
+export async function apiSetAgent(userId: string, kind: string, enabled: boolean) {
+  const res = await authFetch(`/api/v1/admin/users/${encodeURIComponent(userId)}/agent`, {
+    method: "PUT",
+    body: JSON.stringify({ kind, enabled }),
+  });
+  if (res.status === 403) throw Object.assign(new Error("forbidden"), { code: 403 });
+  if (!res.ok) throw new Error(await parseError(res));
+  return res.json();
+}
+
+export async function apiRebalanceAgent(
+  userId: string,
+  direction: "credit" | "debit",
+  amountMinor: number,
+  note: string,
+) {
+  const res = await authFetch(
+    `/api/v1/admin/users/${encodeURIComponent(userId)}/agent/rebalance`,
+    {
+      method: "POST",
+      body: JSON.stringify({ direction, amountMinor, note }),
+    },
+  );
+  if (res.status === 403) throw Object.assign(new Error("forbidden"), { code: 403 });
+  if (!res.ok) throw new Error(await parseError(res));
+  return res.json();
+}
+
+export async function apiGetCashConfig() {
+  const res = await authFetch("/api/v1/admin/cash-config");
+  if (res.status === 403) throw Object.assign(new Error("forbidden"), { code: 403 });
+  if (!res.ok) throw new Error(await parseError(res));
+  return res.json() as Promise<{
+    feeBps: number;
+    agentShareBps: number;
+    lowFloatMinor: number;
+    floatProductId: number;
+    feeSavingsId: string;
+  }>;
+}
+
+export async function apiPutCashConfig(feeBps: number, agentShareBps: number, lowFloatMinor: number) {
+  const res = await authFetch("/api/v1/admin/cash-config", {
+    method: "PUT",
+    body: JSON.stringify({ feeBps, agentShareBps, lowFloatMinor }),
+  });
+  if (res.status === 403) throw Object.assign(new Error("forbidden"), { code: 403 });
+  if (!res.ok) throw new Error(await parseError(res));
+  return res.json();
+}
+
+export async function apiBootstrapAgentCore() {
+  const res = await authFetch("/api/v1/admin/agent/bootstrap", { method: "POST" });
+  if (res.status === 403) throw Object.assign(new Error("forbidden"), { code: 403 });
+  if (!res.ok) throw new Error(await parseError(res));
+  return res.json() as Promise<{ floatProductId: number; feeClientId: string; feeSavingsId: string }>;
+}
+

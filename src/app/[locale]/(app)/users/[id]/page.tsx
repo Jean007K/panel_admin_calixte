@@ -15,6 +15,7 @@ import {
   hasPermission,
   type UserDossier,
 } from "@/lib/api";
+import { AgentDesk } from "@/components/agent-desk";
 import { StatusChip } from "@/components/status-chip";
 import { UserCardsPanel } from "@/components/user-cards-panel";
 
@@ -75,6 +76,7 @@ export default function UserDetailPage() {
   const [msg, setMsg] = useState("");
   const [busy, setBusy] = useState(false);
   const canUpdate = hasPermission(getStaff(), "users:update_status");
+  const canFees = hasPermission(getStaff(), "flags:write");
   const canRead = hasPermission(getStaff(), "users:read");
   const canRevokeDevice = hasPermission(getStaff(), "devices:revoke");
   const canDelete = hasPermission(getStaff(), "users:delete");
@@ -245,6 +247,7 @@ export default function UserDetailPage() {
 
       <div className="pt-5">
         {tab === "summary" ? (
+          <>
           <div className="grid gap-6 lg:grid-cols-2">
             <dl className="grid grid-cols-2 gap-4 text-sm">
               <div>
@@ -315,6 +318,8 @@ export default function UserDetailPage() {
               <p className="text-sm text-[var(--text-muted)]">{t("noPermissionAction")}</p>
             )}
           </div>
+          <AgentDesk userId={id} canWrite={canUpdate} canFees={canFees} />
+          </>
         ) : null}
 
         {tab === "cards" ? (
