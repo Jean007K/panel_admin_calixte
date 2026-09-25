@@ -76,7 +76,6 @@ export default function UserDetailPage() {
   const [msg, setMsg] = useState("");
   const [busy, setBusy] = useState(false);
   const canUpdate = hasPermission(getStaff(), "users:update_status");
-  const canFees = hasPermission(getStaff(), "flags:write");
   const canRead = hasPermission(getStaff(), "users:read");
   const canRevokeDevice = hasPermission(getStaff(), "devices:revoke");
   const canDelete = hasPermission(getStaff(), "users:delete");
@@ -318,7 +317,7 @@ export default function UserDetailPage() {
               <p className="text-sm text-[var(--text-muted)]">{t("noPermissionAction")}</p>
             )}
           </div>
-          <AgentDesk userId={id} canWrite={canUpdate} canFees={canFees} />
+          <AgentDesk userId={id} />
           </>
         ) : null}
 

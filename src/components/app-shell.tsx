@@ -69,8 +69,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       pathname.includes("/sessions") ||
       pathname.includes("/audit") ||
       pathname.includes("/ops") ||
-      pathname.includes("/support") ||
-      pathname.includes("/account-requests") ||
       pathname.includes("/config/simulaciones")
     ) {
       setOpen((o) => ({ ...o, more: true }));
@@ -96,19 +94,18 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     );
   }
 
-  const usersItem: NavLeaf = {
-    href: `/${locale}/users`,
-    labelKey: "nav.users",
-    perm: "users:read",
-    match: "/users",
-  };
-
-  const cardsItem: NavLeaf = {
-    href: `/${locale}/cards`,
-    labelKey: "nav.cards",
-    perm: "users:read",
-    match: "/cards",
-  };
+  const topItems: NavLeaf[] = [
+    { href: `/${locale}/users`, labelKey: "nav.users", perm: "users:read", match: "/users" },
+    { href: `/${locale}/agentes`, labelKey: "nav.agents", perm: "users:read", match: "/agentes" },
+    { href: `/${locale}/cards`, labelKey: "nav.cards", perm: "users:read", match: "/cards" },
+    { href: `/${locale}/support`, labelKey: "nav.support", perm: "users:read", match: "/support" },
+    {
+      href: `/${locale}/account-requests`,
+      labelKey: "nav.accountRequests",
+      perm: "users:read",
+      match: "/account-requests",
+    },
+  ];
 
   const groups: NavGroup[] = [
     {
@@ -140,12 +137,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           match: "/config/seguros",
         },
         {
-          href: `/${locale}/config/actualizacion`,
-          labelKey: "nav.configRemote",
-          perm: "flags:read",
-          match: "/config/actualizacion",
-        },
-        {
           href: `/${locale}/config/flags`,
           labelKey: "nav.configFlags",
           perm: "flags:read",
@@ -172,13 +163,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         },
         { href: `/${locale}/audit`, labelKey: "nav.audit", perm: "audit:read", match: "/audit" },
         { href: `/${locale}/ops`, labelKey: "nav.ops", perm: "ops:read", match: "/ops" },
-        { href: `/${locale}/support`, labelKey: "nav.support", perm: "users:read", match: "/support" },
-        {
-          href: `/${locale}/account-requests`,
-          labelKey: "nav.accountRequests",
-          perm: "users:read",
-          match: "/account-requests",
-        },
         {
           href: `/${locale}/config/simulaciones`,
           labelKey: "nav.configSimulations",
@@ -208,22 +192,19 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <p className="mt-0.5 text-xs text-[var(--text-muted)]">{t("app.tagline")}</p>
         </div>
         <nav className="flex flex-1 flex-col gap-1 overflow-x-hidden overflow-y-auto p-3">
-          {hasPermission(staff, usersItem.perm) ? (
-            <Link
-              href={usersItem.href}
-              className={leafClass(pathname.includes(usersItem.match) && !pathname.includes("/cards"))}
-            >
-              {t(usersItem.labelKey)}
-            </Link>
-          ) : null}
-          {hasPermission(staff, cardsItem.perm) ? (
-            <Link
-              href={cardsItem.href}
-              className={leafClass(pathname.includes(cardsItem.match))}
-            >
-              {t(cardsItem.labelKey)}
-            </Link>
-          ) : null}
+          {topItems
+            .filter((item) => hasPermission(staff, item.perm))
+            .map((item) => {
+              const active =
+                item.match === "/users"
+                  ? pathname.includes("/users") && !pathname.includes("/cards")
+                  : pathname.includes(item.match);
+              return (
+                <Link key={item.href} href={item.href} className={leafClass(active)}>
+                  {t(item.labelKey)}
+                </Link>
+              );
+            })}
 
           {groups.map((g) => {
             const visible = g.children.filter((c) => hasPermission(staff, c.perm));

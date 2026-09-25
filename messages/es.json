@@ -5,6 +5,7 @@
   },
   "nav": {
     "users": "Usuarios",
+    "agents": "Agentes",
     "config": "Configuración de la app",
     "configAds": "Anuncios",
     "configLoans": "Préstamos",
@@ -108,7 +109,19 @@
       "feesSaved": "Comisión guardada",
       "recent": "Últimos movimientos de caja",
       "emptyOps": "Sin movimientos",
-      "error": "No se pudo completar"
+      "error": "No se pudo completar",
+      "paused": "pausado",
+      "openDesk": "Abrir ventanilla",
+      "pageTitle": "Agentes",
+      "pageLead": "Alta, comisión de retiro y ventanilla del centro. El float no es la billetera personal.",
+      "search": "Buscar teléfono, nombre o ID",
+      "searchGo": "Buscar",
+      "makeAgent": "Dar de alta",
+      "history": "Movimientos recientes",
+      "emptyAgents": "Todavía no hay agentes",
+      "colName": "Nombre",
+      "colPhone": "Teléfono",
+      "forbidden": "Sin permiso para ver agentes"
     },
     "tabs": {
       "summary": "Resumen",

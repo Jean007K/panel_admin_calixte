@@ -5,6 +5,7 @@
   },
   "nav": {
     "users": "Utilisateurs",
+    "agents": "Agents",
     "config": "Configuration de l'app",
     "configAds": "Annonces",
     "configLoans": "Prêts",
@@ -108,7 +109,19 @@
       "feesSaved": "Commission enregistrée",
       "recent": "Derniers mouvements de caisse",
       "emptyOps": "Aucun mouvement",
-      "error": "Opération impossible"
+      "error": "Opération impossible",
+      "paused": "en pause",
+      "openDesk": "Ouvrir le guichet",
+      "pageTitle": "Agents",
+      "pageLead": "Création, commission de retrait et guichet du centre. Le float n'est pas le portefeuille personnel.",
+      "search": "Chercher téléphone, nom ou ID",
+      "searchGo": "Chercher",
+      "makeAgent": "Créer un agent",
+      "history": "Mouvements récents",
+      "emptyAgents": "Pas encore d'agents",
+      "colName": "Nom",
+      "colPhone": "Téléphone",
+      "forbidden": "Pas d'autorisation pour voir les agents"
     },
     "tabs": {
       "summary": "Résumé",

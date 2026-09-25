@@ -695,6 +695,43 @@ export async function apiPutCashConfig(feeBps: number, agentShareBps: number, lo
   return res.json();
 }
 
+export type AgentListItem = {
+  userId: string;
+  displayName: string;
+  phone: string;
+  kind: string;
+  enabled: boolean;
+  floatSavingsId?: string;
+  floatAvailableMinor: number;
+  lowFloat: boolean;
+};
+
+export type AgentHome = {
+  agents: AgentListItem[];
+  recent: Array<{
+    id: string;
+    userId?: string;
+    agentUserId: string;
+    direction: string;
+    amountMinor: number;
+    feeMinor: number;
+    status: string;
+    note?: string;
+    createdAt: string;
+  }>;
+  feeBps: number;
+  agentShareBps: number;
+  lowFloatMinor: number;
+  floatProductId: number;
+};
+
+export async function apiListAgents() {
+  const res = await authFetch("/api/v1/admin/agents");
+  if (res.status === 403) throw Object.assign(new Error("forbidden"), { code: 403 });
+  if (!res.ok) throw new Error(await parseError(res));
+  return res.json() as Promise<AgentHome>;
+}
+
 export async function apiBootstrapAgentCore() {
   const res = await authFetch("/api/v1/admin/agent/bootstrap", { method: "POST" });
   if (res.status === 403) throw Object.assign(new Error("forbidden"), { code: 403 });

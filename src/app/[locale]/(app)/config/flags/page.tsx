@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { apiListFlags, apiUpsertFlag, getStaff, hasPermission } from "@/lib/api";
 import { PAGE_SIZE, PaginationBar } from "@/components/pagination-bar";
+import { RemoteUpdateForm } from "@/components/remote-update-form";
 
 type Flag = { key: string; enabled: boolean; value: unknown; updatedAt: string };
 
@@ -104,6 +105,7 @@ export default function ConfigFlagsPage() {
         </table>
       </div>
       <PaginationBar total={items.length} limit={PAGE_SIZE} offset={offset} onPage={setOffset} />
+      <RemoteUpdateForm embedded />
     </div>
   );
 }
