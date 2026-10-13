@@ -18,6 +18,7 @@ import {
 import { AgentDesk } from "@/components/agent-desk";
 import { StatusChip } from "@/components/status-chip";
 import { UserCardsPanel } from "@/components/user-cards-panel";
+import { UserCryptoPanel } from "@/components/user-crypto-panel";
 
 const STATUSES = ["active", "pending", "locked", "suspended", "disabled", "closed"];
 
@@ -29,7 +30,8 @@ type TabId =
   | "sessions"
   | "audit"
   | "transfers"
-  | "notifications";
+  | "notifications"
+  | "crypto";
 
 function str(v: unknown): string {
   if (v == null) return "—";
@@ -155,6 +157,7 @@ export default function UserDetailPage() {
         { id: "audit" as const, label: t("tabs.audit") },
         { id: "transfers" as const, label: t("tabs.transfers") },
         { id: "notifications" as const, label: t("tabs.notifications") },
+        { id: "crypto" as const, label: t("tabs.crypto") },
       ] as const,
     [t],
   );
@@ -201,6 +204,11 @@ export default function UserDetailPage() {
                 : ""}
             </p>
             <p className="font-mono-data text-xs text-[var(--text-muted)]">{user.id}</p>
+            <p className="text-sm text-[var(--text-muted)]">
+              {dossier.crypto?.walletAddress
+                ? `${t("crypto.address")}: ${dossier.crypto.walletAddress}`
+                : t("crypto.empty")}
+            </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
             {mifosUrl ? (
@@ -424,6 +432,7 @@ export default function UserDetailPage() {
         ) : null}
 
         {tab === "notifications" ? <UserNotifications userId={id} /> : null}
+        {tab === "crypto" ? <UserCryptoPanel userId={id} crypto={dossier.crypto} /> : null}
 
         {tab === "transfers" ? (
           <DataTable

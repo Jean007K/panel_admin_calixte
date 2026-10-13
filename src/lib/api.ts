@@ -32,6 +32,38 @@ export type AppUser = {
   onboarding?: "linked" | "partial" | "missing" | string;
 };
 
+export type AdminCryptoLink = {
+  linked: boolean;
+  dynamicUserId?: string;
+  walletAddress?: string;
+  chain?: string;
+  pilotStatus?: string;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+export type USDCBalance = {
+  network: string;
+  chainId: number;
+  symbol: string;
+  amount?: string;
+  ok: boolean;
+  error?: string;
+};
+
+export type AdminCryptoRow = {
+  userId: string;
+  phoneE164: string;
+  displayName?: string;
+  deviceModel?: string;
+  dynamicUserId: string;
+  walletAddress: string;
+  chain: string;
+  pilotStatus: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
 export type UserDossier = {
   user: AppUser;
   onboarding: string;
@@ -42,6 +74,7 @@ export type UserDossier = {
   sessionsHistory: Record<string, unknown>[];
   audit: Record<string, unknown>[];
   transfers: Record<string, unknown>[];
+  crypto?: AdminCryptoLink;
 };
 
 export type PromoAdmin = {
@@ -276,6 +309,7 @@ export async function apiGetUserDossier(id: string) {
         sessionsHistory: [],
         audit: [],
         transfers: [],
+        crypto: { linked: false },
       } satisfies UserDossier;
     } catch (e) {
       throw e;
@@ -503,6 +537,20 @@ export type AdminDeskCard = AdminUserCard & {
   phoneE164: string;
   displayName: string;
 };
+
+export async function apiListCryptoWallets() {
+  const res = await authFetch("/api/v1/admin/crypto/wallets");
+  if (res.status === 403) throw Object.assign(new Error("forbidden"), { code: 403 });
+  if (!res.ok) throw new Error(await parseError(res));
+  return res.json() as Promise<{ items: AdminCryptoRow[]; total: number }>;
+}
+
+export async function apiGetCryptoBalances(userId: string) {
+  const res = await authFetch(`/api/v1/admin/users/${encodeURIComponent(userId)}/crypto/balances`);
+  if (res.status === 403) throw Object.assign(new Error("forbidden"), { code: 403 });
+  if (!res.ok) throw new Error(await parseError(res));
+  return res.json() as Promise<{ linked: boolean; walletAddress: string; balances: USDCBalance[] }>;
+}
 
 export async function apiListAllCards(params: {
   q?: string;
