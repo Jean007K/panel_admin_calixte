@@ -181,7 +181,7 @@
       "opsTitle": "Avisos de operación",
       "opsBuy": "Comprar sigue cerrado. La caja de USDC no firma desde el banco.",
       "opsFee": "El fijo del envío no entra en la caja de la venta. Va a 0x3f10888fed903b01f93fef3ca11c0c3fd67512a0.",
-      "opsToll": "El peaje de Base sale de 0x2bDa2Cd089cfE51590317Bd3B9264421558dbCa8. Si esa billetera no tiene ETH en Base, el envío de USDC no sale. Cada persona puede recibir un adelanto al día.",
+      "opsToll": "El peaje de Base sale de 0x2bDa2Cd089cfE51590317Bd3B9264421558dbCa8. Si la persona no tiene ETH, el banco lo adelanta en cada envío de USDC. La venta sigue con un adelanto al día. El techo de todos es 0.02 ETH al día.",
       "opsSol": "Solana se puede recibir. Este teléfono no envía Solana.",
       "opsOther": "Ether, USDT y BNB salen solo si la persona ya tiene el peaje de esa red. El banco no lo adelanta. Bitcoin paga el peaje con su propio Bitcoin."
     },
