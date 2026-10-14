@@ -141,6 +141,16 @@ function DeskPrices({ canWrite }: { canWrite: boolean }) {
           </li>
         </ul>
       ) : null}
+      <div>
+        <h3 className="text-sm font-medium">{t("opsTitle")}</h3>
+        <ul className="mt-2 space-y-1 text-sm text-[var(--text-muted)]">
+          <li>{t("opsBuy")}</li>
+          <li>{t("opsFee")}</li>
+          <li>{t("opsToll")}</li>
+          <li>{t("opsSol")}</li>
+          <li>{t("opsOther")}</li>
+        </ul>
+      </div>
     </section>
   );
 }
