@@ -538,6 +538,44 @@ export type AdminDeskCard = AdminUserCard & {
   displayName: string;
 };
 
+export type CryptoDeskGates = {
+  desk: {
+    buyHtgMinor: number;
+    sellHtgMinor: number;
+    sendFeeUsdcMinor: number;
+    baseReady: boolean;
+  };
+  sendOpen: boolean;
+  sellOpen: boolean;
+  buyOpen: boolean;
+  sendClosed?: string;
+  sellClosed?: string;
+  buyClosed?: string;
+};
+
+export async function apiGetCryptoDesk() {
+  const res = await authFetch("/api/v1/admin/crypto/desk");
+  if (res.status === 403) throw Object.assign(new Error("forbidden"), { code: 403 });
+  if (!res.ok) throw new Error(await parseError(res));
+  return res.json() as Promise<CryptoDeskGates>;
+}
+
+export async function apiPutCryptoDesk(body: {
+  buyHtg: string;
+  sellHtg: string;
+  sendFeeUsdc: string;
+  baseReady: boolean;
+}) {
+  const res = await authFetch("/api/v1/admin/crypto/desk", {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  if (res.status === 403) throw Object.assign(new Error("forbidden"), { code: 403 });
+  if (!res.ok) throw new Error(await parseError(res));
+  return res.json() as Promise<CryptoDeskGates>;
+}
+
 export async function apiListCryptoWallets() {
   const res = await authFetch("/api/v1/admin/crypto/wallets");
   if (res.status === 403) throw Object.assign(new Error("forbidden"), { code: 403 });

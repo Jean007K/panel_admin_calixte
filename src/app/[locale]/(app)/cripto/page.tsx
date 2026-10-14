@@ -3,7 +3,147 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
-import { apiListCryptoWallets, getStaff, hasPermission, type AdminCryptoRow } from "@/lib/api";
+import {
+  apiGetCryptoDesk,
+  apiListCryptoWallets,
+  apiPutCryptoDesk,
+  getStaff,
+  hasPermission,
+  type AdminCryptoRow,
+  type CryptoDeskGates,
+} from "@/lib/api";
+
+function minorToHtg(value: number) {
+  if (!value) return "";
+  return (value / 100).toFixed(2);
+}
+
+function minorToUsdc(value: number) {
+  if (!value) return "";
+  const raw = (value / 1_000_000).toFixed(6).replace(/0+$/, "").replace(/\.$/, "");
+  return raw.includes(".") && raw.split(".")[1].length < 2 ? Number(raw).toFixed(2) : raw;
+}
+
+function DeskPrices({ canWrite }: { canWrite: boolean }) {
+  const t = useTranslations("users.crypto");
+  const [buy, setBuy] = useState("");
+  const [sell, setSell] = useState("");
+  const [fee, setFee] = useState("");
+  const [baseReady, setBaseReady] = useState(false);
+  const [gates, setGates] = useState<CryptoDeskGates | null>(null);
+  const [note, setNote] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const data = await apiGetCryptoDesk();
+        if (cancelled) return;
+        setGates(data);
+        setBuy(minorToHtg(data.desk?.buyHtgMinor ?? 0));
+        setSell(minorToHtg(data.desk?.sellHtgMinor ?? 0));
+        setFee(minorToUsdc(data.desk?.sendFeeUsdcMinor ?? 0));
+        setBaseReady(Boolean(data.desk?.baseReady));
+      } catch {
+        if (!cancelled) setNote(t("loadError"));
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [t]);
+
+  async function save() {
+    setSaving(true);
+    setNote(null);
+    try {
+      const data = await apiPutCryptoDesk({
+        buyHtg: buy.trim(),
+        sellHtg: sell.trim(),
+        sendFeeUsdc: fee.trim(),
+        baseReady,
+      });
+      setGates(data);
+      setNote(t("savedPrices"));
+    } catch (e) {
+      setNote((e as { code?: number }).code === 403 ? t("needContent") : t("saveError"));
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <section className="space-y-3 rounded border border-[var(--border)] bg-[var(--surface)] p-4">
+      <div>
+        <h2 className="text-base font-medium">{t("pricesTitle")}</h2>
+        <p className="mt-1 text-sm text-[var(--text-muted)]">{t("pricesLead")}</p>
+      </div>
+      <label className="block text-sm">
+        {t("buyHtg")}
+        <input
+          value={buy}
+          onChange={(e) => setBuy(e.target.value)}
+          disabled={!canWrite}
+          className="mt-1 w-full rounded border border-[var(--border)] bg-[var(--bg)] px-3 py-2"
+        />
+      </label>
+      <label className="block text-sm">
+        {t("sellHtg")}
+        <input
+          value={sell}
+          onChange={(e) => setSell(e.target.value)}
+          disabled={!canWrite}
+          className="mt-1 w-full rounded border border-[var(--border)] bg-[var(--bg)] px-3 py-2"
+        />
+      </label>
+      <label className="block text-sm">
+        {t("sendFee")}
+        <input
+          value={fee}
+          onChange={(e) => setFee(e.target.value)}
+          disabled={!canWrite}
+          className="mt-1 w-full rounded border border-[var(--border)] bg-[var(--bg)] px-3 py-2"
+        />
+      </label>
+      <label className="flex items-center gap-2 text-sm">
+        <input
+          type="checkbox"
+          checked={baseReady}
+          disabled={!canWrite}
+          onChange={(e) => setBaseReady(e.target.checked)}
+        />
+        {t("baseReady")}
+      </label>
+      {canWrite ? (
+        <button
+          type="button"
+          onClick={save}
+          disabled={saving}
+          className="rounded border border-[var(--border)] px-4 py-2 text-sm"
+        >
+          {t("savePrices")}
+        </button>
+      ) : (
+        <p className="text-sm text-[var(--text-muted)]">{t("needContent")}</p>
+      )}
+      {note ? <p className="text-sm text-[var(--text-muted)]">{note}</p> : null}
+      {gates ? (
+        <ul className="space-y-1 text-sm text-[var(--text-muted)]">
+          <li>
+            {t("sendClosed")}: {gates.sendOpen ? t("gateOpen") : gates.sendClosed || "—"}
+          </li>
+          <li>
+            {t("sellClosed")}: {gates.sellOpen ? t("gateOpen") : gates.sellClosed || "—"}
+          </li>
+          <li>
+            {t("buyClosed")}: {gates.buyOpen ? t("gateOpen") : gates.buyClosed || "—"}
+          </li>
+        </ul>
+      ) : null}
+    </section>
+  );
+}
 
 function statusLabel(status: string, t: (k: string) => string) {
   if (status === "active") return t("statusActive");
@@ -17,6 +157,7 @@ export default function CryptoDeskPage() {
   const tc = useTranslations("common");
   const locale = useLocale();
   const canRead = hasPermission(getStaff(), "users:read");
+  const canWrite = hasPermission(getStaff(), "content:write");
   const [items, setItems] = useState<AdminCryptoRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<"forbidden" | "load" | null>(null);
@@ -53,6 +194,7 @@ export default function CryptoDeskPage() {
         <h1 className="font-display text-2xl tracking-tight">{t("pageTitle")}</h1>
         <p className="mt-1 text-sm text-[var(--text-muted)]">{t("pageLead")}</p>
       </div>
+      <DeskPrices canWrite={canWrite} />
       <div className="overflow-auto rounded border border-[var(--border)] bg-[var(--surface)]">
         <table className="w-full min-w-[900px] text-left text-sm">
           <thead className="border-b border-[var(--border)] bg-[var(--surface-2)] text-xs uppercase tracking-wide text-[var(--text-muted)]">
