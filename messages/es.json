@@ -468,6 +468,10 @@
   "fx": {
     "title": "Tipo de cambio",
     "lead": "La tasa del banco. La referencia y el margen no salen de esta pantalla.",
+    "feed": "Fuente enchufada",
+    "feedHelp": "El reloj usa solo esta fuente. Las demás quedan instaladas y no se consultan.",
+    "feedOpen": "Fuente abierta, diaria",
+    "feedXe": "XE, sin usar por ahora",
     "reference": "Referencia (gourdes por 1 dólar)",
     "pays": "El cliente paga por 1 dólar",
     "receives": "El cliente recibe por 1 dólar",

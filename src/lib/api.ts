@@ -585,6 +585,8 @@ export async function apiPutCryptoDesk(body: {
 }
 
 export type FxBoard = {
+  feed: string;
+  feeds: string[];
   open: boolean;
   referenceLive: boolean;
   reference: string;
@@ -609,6 +611,7 @@ export async function apiGetFx() {
 }
 
 export async function apiPutFx(body: {
+  feed: string;
   sellMargin: string;
   buyMargin: string;
   demandCap: string;

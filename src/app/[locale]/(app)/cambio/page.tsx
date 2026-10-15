@@ -9,6 +9,7 @@ export default function FxPage() {
   const canRead = hasPermission(getStaff(), "users:read");
   const canWrite = hasPermission(getStaff(), "content:write");
   const [board, setBoard] = useState<FxBoard | null>(null);
+  const [feed, setFeed] = useState("open");
   const [sellMargin, setSellMargin] = useState("");
   const [buyMargin, setBuyMargin] = useState("");
   const [demandCap, setDemandCap] = useState("");
@@ -22,6 +23,7 @@ export default function FxPage() {
 
   function apply(data: FxBoard) {
     setBoard(data);
+    setFeed(data.feed || "open");
     setSellMargin(data.sellMargin === "0.00" ? "" : data.sellMargin);
     setBuyMargin(data.buyMargin === "0.00" ? "" : data.buyMargin);
     setDemandCap(data.demandCap === "0.00" ? "" : data.demandCap);
@@ -55,6 +57,7 @@ export default function FxPage() {
     setNote(null);
     try {
       const data = await apiPutFx({
+        feed,
         sellMargin: sellMargin.trim(),
         buyMargin: buyMargin.trim(),
         demandCap: demandCap.trim(),
@@ -82,6 +85,22 @@ export default function FxPage() {
         <h1 className="text-xl font-medium">{t("title")}</h1>
         <p className="mt-1 text-sm text-[var(--text-muted)]">{t("lead")}</p>
       </div>
+      <label className="block text-sm">
+        {t("feed")}
+        <select
+          value={feed}
+          onChange={(e) => setFeed(e.target.value)}
+          disabled={!canWrite}
+          className="mt-1 w-full rounded border border-[var(--border)] bg-[var(--bg)] px-3 py-2"
+        >
+          {(board?.feeds?.length ? board.feeds : ["open", "xe"]).map((id) => (
+            <option key={id} value={id}>
+              {id === "open" ? t("feedOpen") : id === "xe" ? t("feedXe") : id}
+            </option>
+          ))}
+        </select>
+      </label>
+      <p className="text-sm text-[var(--text-muted)]">{t("feedHelp")}</p>
       {board ? (
         <ul className="space-y-1 text-sm text-[var(--text-muted)]">
           <li>

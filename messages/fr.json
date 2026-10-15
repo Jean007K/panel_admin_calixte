@@ -468,6 +468,10 @@
   "fx": {
     "title": "Taux de change",
     "lead": "Le taux de la banque. La référence et la marge ne sortent pas de cet écran.",
+    "feed": "Source branchée",
+    "feedHelp": "L'horloge n'utilise que cette source. Les autres restent installées et ne sont pas consultées.",
+    "feedOpen": "Source ouverte, quotidienne",
+    "feedXe": "XE, non utilisé pour l'instant",
     "reference": "Référence (gourdes pour 1 dollar)",
     "pays": "Le client paie pour 1 dollar",
     "receives": "Le client reçoit pour 1 dollar",
