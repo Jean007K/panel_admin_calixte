@@ -545,8 +545,11 @@ export type CryptoDeskGates = {
     sendFeeUsdcMinor: number;
     ethBuyHtgMinor?: number;
     ethSellHtgMinor?: number;
+    commissionBps?: number;
     baseReady: boolean;
   };
+  ethUsd?: string;
+  ethAsOf?: string;
   sendOpen: boolean;
   sellOpen: boolean;
   buyOpen: boolean;
@@ -573,6 +576,7 @@ export async function apiPutCryptoDesk(body: {
   ethBuyHtg: string;
   ethSellHtg: string;
   baseReady: boolean;
+  commissionPercent?: string;
 }) {
   const res = await authFetch("/api/v1/admin/crypto/desk", {
     method: "PUT",

@@ -99,6 +99,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     { href: `/${locale}/agentes`, labelKey: "nav.agents", perm: "users:read", match: "/agentes" },
     { href: `/${locale}/cards`, labelKey: "nav.cards", perm: "users:read", match: "/cards" },
     { href: `/${locale}/cripto`, labelKey: "nav.crypto", perm: "users:read", match: "/cripto" },
+    { href: `/${locale}/cotizacion`, labelKey: "nav.quotes", perm: "users:read", match: "/cotizacion" },
     { href: `/${locale}/cambio`, labelKey: "nav.fx", perm: "users:read", match: "/cambio" },
     { href: `/${locale}/support`, labelKey: "nav.support", perm: "users:read", match: "/support" },
     {
