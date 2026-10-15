@@ -13,11 +13,6 @@ import {
   type CryptoDeskGates,
 } from "@/lib/api";
 
-function minorToHtg(value: number) {
-  if (!value) return "";
-  return (value / 100).toFixed(2);
-}
-
 function minorToUsdc(value: number) {
   if (!value) return "";
   const raw = (value / 1_000_000).toFixed(6).replace(/0+$/, "").replace(/\.$/, "");
@@ -26,11 +21,7 @@ function minorToUsdc(value: number) {
 
 function DeskPrices({ canWrite }: { canWrite: boolean }) {
   const t = useTranslations("users.crypto");
-  const [buy, setBuy] = useState("");
-  const [sell, setSell] = useState("");
   const [fee, setFee] = useState("");
-  const [ethBuy, setEthBuy] = useState("");
-  const [ethSell, setEthSell] = useState("");
   const [baseReady, setBaseReady] = useState(false);
   const [gates, setGates] = useState<CryptoDeskGates | null>(null);
   const [note, setNote] = useState<string | null>(null);
@@ -43,11 +34,7 @@ function DeskPrices({ canWrite }: { canWrite: boolean }) {
         const data = await apiGetCryptoDesk();
         if (cancelled) return;
         setGates(data);
-        setBuy(minorToHtg(data.desk?.buyHtgMinor ?? 0));
-        setSell(minorToHtg(data.desk?.sellHtgMinor ?? 0));
         setFee(minorToUsdc(data.desk?.sendFeeUsdcMinor ?? 0));
-        setEthBuy(minorToHtg(data.desk?.ethBuyHtgMinor ?? 0));
-        setEthSell(minorToHtg(data.desk?.ethSellHtgMinor ?? 0));
         setBaseReady(Boolean(data.desk?.baseReady));
       } catch {
         if (!cancelled) setNote(t("loadError"));
@@ -63,11 +50,11 @@ function DeskPrices({ canWrite }: { canWrite: boolean }) {
     setNote(null);
     try {
       const data = await apiPutCryptoDesk({
-        buyHtg: buy.trim(),
-        sellHtg: sell.trim(),
+        buyHtg: "",
+        sellHtg: "",
         sendFeeUsdc: fee.trim(),
-        ethBuyHtg: ethBuy.trim(),
-        ethSellHtg: ethSell.trim(),
+        ethBuyHtg: "",
+        ethSellHtg: "",
         baseReady,
       });
       setGates(data);
@@ -85,42 +72,6 @@ function DeskPrices({ canWrite }: { canWrite: boolean }) {
         <h2 className="text-base font-medium">{t("pricesTitle")}</h2>
         <p className="mt-1 text-sm text-[var(--text-muted)]">{t("pricesLead")}</p>
       </div>
-      <label className="block text-sm">
-        {t("buyHtg")}
-        <input
-          value={buy}
-          onChange={(e) => setBuy(e.target.value)}
-          disabled={!canWrite}
-          className="mt-1 w-full rounded border border-[var(--border)] bg-[var(--bg)] px-3 py-2"
-        />
-      </label>
-      <label className="block text-sm">
-        {t("sellHtg")}
-        <input
-          value={sell}
-          onChange={(e) => setSell(e.target.value)}
-          disabled={!canWrite}
-          className="mt-1 w-full rounded border border-[var(--border)] bg-[var(--bg)] px-3 py-2"
-        />
-      </label>
-      <label className="block text-sm">
-        {t("ethBuyHtg")}
-        <input
-          value={ethBuy}
-          onChange={(e) => setEthBuy(e.target.value)}
-          disabled={!canWrite}
-          className="mt-1 w-full rounded border border-[var(--border)] bg-[var(--bg)] px-3 py-2"
-        />
-      </label>
-      <label className="block text-sm">
-        {t("ethSellHtg")}
-        <input
-          value={ethSell}
-          onChange={(e) => setEthSell(e.target.value)}
-          disabled={!canWrite}
-          className="mt-1 w-full rounded border border-[var(--border)] bg-[var(--bg)] px-3 py-2"
-        />
-      </label>
       <label className="block text-sm">
         {t("sendFee")}
         <input
