@@ -29,6 +29,8 @@ function DeskPrices({ canWrite }: { canWrite: boolean }) {
   const [buy, setBuy] = useState("");
   const [sell, setSell] = useState("");
   const [fee, setFee] = useState("");
+  const [ethBuy, setEthBuy] = useState("");
+  const [ethSell, setEthSell] = useState("");
   const [baseReady, setBaseReady] = useState(false);
   const [gates, setGates] = useState<CryptoDeskGates | null>(null);
   const [note, setNote] = useState<string | null>(null);
@@ -44,6 +46,8 @@ function DeskPrices({ canWrite }: { canWrite: boolean }) {
         setBuy(minorToHtg(data.desk?.buyHtgMinor ?? 0));
         setSell(minorToHtg(data.desk?.sellHtgMinor ?? 0));
         setFee(minorToUsdc(data.desk?.sendFeeUsdcMinor ?? 0));
+        setEthBuy(minorToHtg(data.desk?.ethBuyHtgMinor ?? 0));
+        setEthSell(minorToHtg(data.desk?.ethSellHtgMinor ?? 0));
         setBaseReady(Boolean(data.desk?.baseReady));
       } catch {
         if (!cancelled) setNote(t("loadError"));
@@ -62,6 +66,8 @@ function DeskPrices({ canWrite }: { canWrite: boolean }) {
         buyHtg: buy.trim(),
         sellHtg: sell.trim(),
         sendFeeUsdc: fee.trim(),
+        ethBuyHtg: ethBuy.trim(),
+        ethSellHtg: ethSell.trim(),
         baseReady,
       });
       setGates(data);
@@ -93,6 +99,24 @@ function DeskPrices({ canWrite }: { canWrite: boolean }) {
         <input
           value={sell}
           onChange={(e) => setSell(e.target.value)}
+          disabled={!canWrite}
+          className="mt-1 w-full rounded border border-[var(--border)] bg-[var(--bg)] px-3 py-2"
+        />
+      </label>
+      <label className="block text-sm">
+        {t("ethBuyHtg")}
+        <input
+          value={ethBuy}
+          onChange={(e) => setEthBuy(e.target.value)}
+          disabled={!canWrite}
+          className="mt-1 w-full rounded border border-[var(--border)] bg-[var(--bg)] px-3 py-2"
+        />
+      </label>
+      <label className="block text-sm">
+        {t("ethSellHtg")}
+        <input
+          value={ethSell}
+          onChange={(e) => setEthSell(e.target.value)}
           disabled={!canWrite}
           className="mt-1 w-full rounded border border-[var(--border)] bg-[var(--bg)] px-3 py-2"
         />
@@ -138,6 +162,12 @@ function DeskPrices({ canWrite }: { canWrite: boolean }) {
           </li>
           <li>
             {t("buyClosed")}: {gates.buyOpen ? t("gateOpen") : gates.buyClosed || "—"}
+          </li>
+          <li>
+            {t("ethBuyClosed")}: {gates.ethBuyOpen ? t("gateOpen") : gates.ethBuyClosed || "—"}
+          </li>
+          <li>
+            {t("ethSellClosed")}: {gates.ethSellOpen ? t("gateOpen") : gates.ethSellClosed || "—"}
           </li>
         </ul>
       ) : null}
