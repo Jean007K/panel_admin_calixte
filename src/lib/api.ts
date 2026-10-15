@@ -584,6 +584,49 @@ export async function apiPutCryptoDesk(body: {
   return res.json() as Promise<CryptoDeskGates>;
 }
 
+export type FxBoard = {
+  open: boolean;
+  referenceLive: boolean;
+  reference: string;
+  clientPays: string;
+  clientReceives: string;
+  asOf?: string;
+  demand: string;
+  sellMargin: string;
+  buyMargin: string;
+  demandCap: string;
+  demandFullUsd: string;
+  pinned: boolean;
+  pinnedPays: string;
+  pinnedReceives: string;
+};
+
+export async function apiGetFx() {
+  const res = await authFetch("/api/v1/admin/fx");
+  if (res.status === 403) throw Object.assign(new Error("forbidden"), { code: 403 });
+  if (!res.ok) throw new Error(await parseError(res));
+  return res.json() as Promise<FxBoard>;
+}
+
+export async function apiPutFx(body: {
+  sellMargin: string;
+  buyMargin: string;
+  demandCap: string;
+  demandFullUsd: string;
+  pinned: boolean;
+  pinnedPays: string;
+  pinnedReceives: string;
+}) {
+  const res = await authFetch("/api/v1/admin/fx", {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  if (res.status === 403) throw Object.assign(new Error("forbidden"), { code: 403 });
+  if (!res.ok) throw new Error(await parseError(res));
+  return res.json() as Promise<FxBoard>;
+}
+
 export async function apiListCryptoWallets() {
   const res = await authFetch("/api/v1/admin/crypto/wallets");
   if (res.status === 403) throw Object.assign(new Error("forbidden"), { code: 403 });

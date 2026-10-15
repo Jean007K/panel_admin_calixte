@@ -25,6 +25,7 @@
     "accountRequests": "Comptes extra",
     "cards": "Cartes",
     "crypto": "Cryptomonnaies",
+    "fx": "Taux de change",
     "mifos": "Mifos (Core)"
   },
   "topbar": {
@@ -463,6 +464,30 @@
     "title": "Titre",
     "body": "Corps",
     "date": "Date"
+  },
+  "fx": {
+    "title": "Taux de change",
+    "lead": "Le taux de la banque. La référence et la marge ne sortent pas de cet écran.",
+    "reference": "Référence (gourdes pour 1 dollar)",
+    "pays": "Le client paie pour 1 dollar",
+    "receives": "Le client reçoit pour 1 dollar",
+    "sellMargin": "Marge quand le client achète des dollars (%)",
+    "buyMargin": "Marge quand le client vend des dollars (%)",
+    "demandCap": "Plafond de l'ajustement par la demande (%)",
+    "demandFull": "Dollars qui remplissent le plafond",
+    "demandNow": "Ajustement actuel",
+    "sourceLive": "La référence est en ligne",
+    "sourceDown": "La référence est coupée",
+    "boardOpen": "Tableau ouvert",
+    "boardClosed": "Tableau fermé",
+    "pin": "Fixer le taux à la main",
+    "pinnedPays": "Taux fixé : ce que le client paie",
+    "pinnedReceives": "Taux fixé : ce que le client reçoit",
+    "save": "Enregistrer",
+    "saved": "Taux enregistré",
+    "saveError": "L'enregistrement a échoué",
+    "loadError": "Le taux n'a pas pu être chargé",
+    "needContent": "Pour enregistrer, il faut l'autorisation de contenu."
   },
   "common": {
     "loading": "Chargement…",

@@ -25,6 +25,7 @@
     "accountRequests": "Cuentas extra",
     "cards": "Tarjetas",
     "crypto": "Criptomonedas",
+    "fx": "Tipo de cambio",
     "mifos": "Mifos (Core)"
   },
   "topbar": {
@@ -463,6 +464,30 @@
     "title": "Título",
     "body": "Cuerpo",
     "date": "Fecha"
+  },
+  "fx": {
+    "title": "Tipo de cambio",
+    "lead": "La tasa del banco. La referencia y el margen no salen de esta pantalla.",
+    "reference": "Referencia (gourdes por 1 dólar)",
+    "pays": "El cliente paga por 1 dólar",
+    "receives": "El cliente recibe por 1 dólar",
+    "sellMargin": "Margen cuando el cliente compra dólares (%)",
+    "buyMargin": "Margen cuando el cliente vende dólares (%)",
+    "demandCap": "Tope del ajuste por demanda (%)",
+    "demandFull": "Dólares que llenan el tope",
+    "demandNow": "Ajuste de ahora",
+    "sourceLive": "La referencia está viva",
+    "sourceDown": "La referencia está caída",
+    "boardOpen": "Tablero abierto",
+    "boardClosed": "Tablero cerrado",
+    "pin": "Fijar la tasa a mano",
+    "pinnedPays": "Tasa fijada: lo que paga el cliente",
+    "pinnedReceives": "Tasa fijada: lo que recibe el cliente",
+    "save": "Guardar",
+    "saved": "Tasa guardada",
+    "saveError": "No se pudo guardar",
+    "loadError": "No se pudo cargar la tasa",
+    "needContent": "Para guardar hace falta el permiso de contenido."
   },
   "common": {
     "loading": "Cargando…",
