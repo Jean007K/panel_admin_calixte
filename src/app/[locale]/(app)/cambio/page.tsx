@@ -9,28 +9,22 @@ export default function FxPage() {
   const canRead = hasPermission(getStaff(), "users:read");
   const canWrite = hasPermission(getStaff(), "content:write");
   const [board, setBoard] = useState<FxBoard | null>(null);
-  const [feed, setFeed] = useState("open");
-  const [sellMargin, setSellMargin] = useState("");
-  const [buyMargin, setBuyMargin] = useState("");
+  const [official, setOfficial] = useState("");
+  const [sellAdd, setSellAdd] = useState("");
+  const [buyCut, setBuyCut] = useState("");
   const [demandCap, setDemandCap] = useState("");
   const [demandFullUsd, setDemandFullUsd] = useState("");
-  const [pinned, setPinned] = useState(false);
-  const [pinnedPays, setPinnedPays] = useState("");
-  const [pinnedReceives, setPinnedReceives] = useState("");
   const [note, setNote] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [forbidden, setForbidden] = useState(false);
 
   function apply(data: FxBoard) {
     setBoard(data);
-    setFeed(data.feed || "open");
-    setSellMargin(data.sellMargin === "0.00" ? "" : data.sellMargin);
-    setBuyMargin(data.buyMargin === "0.00" ? "" : data.buyMargin);
+    setOfficial(data.official);
+    setSellAdd(data.sellAdd);
+    setBuyCut(data.buyCut);
     setDemandCap(data.demandCap === "0.00" ? "" : data.demandCap);
     setDemandFullUsd(data.demandFullUsd);
-    setPinned(data.pinned);
-    setPinnedPays(data.pinnedPays);
-    setPinnedReceives(data.pinnedReceives);
   }
 
   useEffect(() => {
@@ -57,14 +51,11 @@ export default function FxPage() {
     setNote(null);
     try {
       const data = await apiPutFx({
-        feed,
-        sellMargin: sellMargin.trim(),
-        buyMargin: buyMargin.trim(),
+        official: official.trim(),
+        sellAdd: sellAdd.trim(),
+        buyCut: buyCut.trim(),
         demandCap: demandCap.trim(),
         demandFullUsd: demandFullUsd.trim(),
-        pinned,
-        pinnedPays: pinnedPays.trim(),
-        pinnedReceives: pinnedReceives.trim(),
       });
       apply(data);
       setNote(t("saved"));
@@ -85,28 +76,8 @@ export default function FxPage() {
         <h1 className="text-xl font-medium">{t("title")}</h1>
         <p className="mt-1 text-sm text-[var(--text-muted)]">{t("lead")}</p>
       </div>
-      <label className="block text-sm">
-        {t("feed")}
-        <select
-          value={feed}
-          onChange={(e) => setFeed(e.target.value)}
-          disabled={!canWrite}
-          className="mt-1 w-full rounded border border-[var(--border)] bg-[var(--bg)] px-3 py-2"
-        >
-          {(board?.feeds?.length ? board.feeds : ["open", "xe"]).map((id) => (
-            <option key={id} value={id}>
-              {id === "open" ? t("feedOpen") : id === "xe" ? t("feedXe") : id}
-            </option>
-          ))}
-        </select>
-      </label>
-      <p className="text-sm text-[var(--text-muted)]">{t("feedHelp")}</p>
       {board ? (
         <ul className="space-y-1 text-sm text-[var(--text-muted)]">
-          <li>
-            {board.referenceLive ? t("sourceLive") : t("sourceDown")}
-            {board.reference ? ` · ${board.reference}` : ""}
-          </li>
           <li>{board.open ? t("boardOpen") : t("boardClosed")}</li>
           <li>
             {t("pays")}: {board.clientPays || "—"}
@@ -120,19 +91,28 @@ export default function FxPage() {
         </ul>
       ) : null}
       <label className="block text-sm">
-        {t("sellMargin")}
+        {t("official")}
         <input
-          value={sellMargin}
-          onChange={(e) => setSellMargin(e.target.value)}
+          value={official}
+          onChange={(e) => setOfficial(e.target.value)}
           disabled={!canWrite}
           className="mt-1 w-full rounded border border-[var(--border)] bg-[var(--bg)] px-3 py-2"
         />
       </label>
       <label className="block text-sm">
-        {t("buyMargin")}
+        {t("sellAdd")}
         <input
-          value={buyMargin}
-          onChange={(e) => setBuyMargin(e.target.value)}
+          value={sellAdd}
+          onChange={(e) => setSellAdd(e.target.value)}
+          disabled={!canWrite}
+          className="mt-1 w-full rounded border border-[var(--border)] bg-[var(--bg)] px-3 py-2"
+        />
+      </label>
+      <label className="block text-sm">
+        {t("buyCut")}
+        <input
+          value={buyCut}
+          onChange={(e) => setBuyCut(e.target.value)}
           disabled={!canWrite}
           className="mt-1 w-full rounded border border-[var(--border)] bg-[var(--bg)] px-3 py-2"
         />
@@ -152,28 +132,6 @@ export default function FxPage() {
           value={demandFullUsd}
           onChange={(e) => setDemandFullUsd(e.target.value)}
           disabled={!canWrite}
-          className="mt-1 w-full rounded border border-[var(--border)] bg-[var(--bg)] px-3 py-2"
-        />
-      </label>
-      <label className="flex items-center gap-2 text-sm">
-        <input type="checkbox" checked={pinned} disabled={!canWrite} onChange={(e) => setPinned(e.target.checked)} />
-        {t("pin")}
-      </label>
-      <label className="block text-sm">
-        {t("pinnedPays")}
-        <input
-          value={pinnedPays}
-          onChange={(e) => setPinnedPays(e.target.value)}
-          disabled={!canWrite || !pinned}
-          className="mt-1 w-full rounded border border-[var(--border)] bg-[var(--bg)] px-3 py-2"
-        />
-      </label>
-      <label className="block text-sm">
-        {t("pinnedReceives")}
-        <input
-          value={pinnedReceives}
-          onChange={(e) => setPinnedReceives(e.target.value)}
-          disabled={!canWrite || !pinned}
           className="mt-1 w-full rounded border border-[var(--border)] bg-[var(--bg)] px-3 py-2"
         />
       </label>

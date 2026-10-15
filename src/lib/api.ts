@@ -585,22 +585,16 @@ export async function apiPutCryptoDesk(body: {
 }
 
 export type FxBoard = {
-  feed: string;
-  feeds: string[];
   open: boolean;
-  referenceLive: boolean;
-  reference: string;
+  official: string;
+  sellAdd: string;
+  buyCut: string;
   clientPays: string;
   clientReceives: string;
   asOf?: string;
   demand: string;
-  sellMargin: string;
-  buyMargin: string;
   demandCap: string;
   demandFullUsd: string;
-  pinned: boolean;
-  pinnedPays: string;
-  pinnedReceives: string;
 };
 
 export async function apiGetFx() {
@@ -611,14 +605,11 @@ export async function apiGetFx() {
 }
 
 export async function apiPutFx(body: {
-  feed: string;
-  sellMargin: string;
-  buyMargin: string;
+  official: string;
+  sellAdd: string;
+  buyCut: string;
   demandCap: string;
   demandFullUsd: string;
-  pinned: boolean;
-  pinnedPays: string;
-  pinnedReceives: string;
 }) {
   const res = await authFetch("/api/v1/admin/fx", {
     method: "PUT",
